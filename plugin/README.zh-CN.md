@@ -23,6 +23,13 @@ dsh plugin --profile web add dsh-update-plugin
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
+如果 pnpm 的 `minimumReleaseAge` 策略因为 lockfile 里已有较新的条目而拒绝安装
+（例如刚用过 `dsh-update-all --min-age 0`），给这一次安装临时放开策略即可：
+
+```bash
+dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
+```
+
 然后重启 DSH Web，打开 **设置 → 通用设置**，就能看到「检查更新」这一行。
 
 ## 使用

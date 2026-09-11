@@ -24,6 +24,15 @@ dsh plugin --profile web add dsh-update-plugin
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
+If pnpm refuses the install because its `minimumReleaseAge` policy rejects an
+already-updated lockfile entry (for example right after you used
+`dsh-update-all --min-age 0`), rerun the command with the policy relaxed for
+that single install:
+
+```bash
+dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
+```
+
 Then restart DSH Web, open **Settings → General**, and look for the
 **Check for Updates...** row.
 

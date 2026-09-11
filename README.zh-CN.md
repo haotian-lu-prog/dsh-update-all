@@ -53,7 +53,9 @@ dsh plugin --profile web add dsh-update-plugin
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
-安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)。
+安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)。如果 pnpm 的
+`minimumReleaseAge` 策略阻止安装，在 `dsh plugin add` 命令后加
+`--config.minimum-release-age=0` 即可。
 
 ## 环境要求
 
