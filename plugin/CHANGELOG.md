@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.0] - 2026-09-12
 
+Published to npm as `dsh-update-plugin@0.1.0`.
+
 ### Added
 
 - **Settings → General** row titled **Check for Updates... / 检查更新**, registered

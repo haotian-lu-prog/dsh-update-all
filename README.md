@@ -1,6 +1,7 @@
 # dsh-update-all
 
 [![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Update **DeepSeek Harness (DSH)**, its bundled `@deepseek-ai/dsh-*` packages and
@@ -52,10 +53,10 @@ separately installed shell script required.
 ![Check for Updates... in DSH Settings → General](plugin/assets/screenshots/general-en.webp)
 
 ```bash
-# from npm (once published)
+# from npm
 dsh plugin --profile web add dsh-update-plugin
 
-# or from this repository before the first npm release
+# from a local checkout (development)
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 

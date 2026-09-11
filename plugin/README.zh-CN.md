@@ -2,6 +2,8 @@
 
 [English](README.md) | 中文
 
+[![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
+
 一个 DSH Web 插件，在 **设置 → 通用设置** 里加入一行「检查更新」，和权限、语言、
 外观、字号大小同级。
 
@@ -18,10 +20,10 @@
 ## 安装
 
 ```bash
-# 从 npm 安装（发布之后）
+# 从 npm 安装
 dsh plugin --profile web add dsh-update-plugin
 
-# 从本仓库 / 本地目录安装
+# 本地开发 / 从本仓库安装
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 

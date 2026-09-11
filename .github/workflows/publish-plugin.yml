@@ -29,6 +29,17 @@ jobs:
           fi
           echo "publishing dsh-update-plugin ${version}"
 
+      - name: Check whether this version is already on npm
+        id: check
+        run: |
+          version="$(node -e "process.stdout.write(JSON.parse(require('node:fs').readFileSync('plugin/package.json','utf8')).version)")"
+          if npm view "dsh-update-plugin@${version}" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "dsh-update-plugin@${version} is already on npm; skipping publish."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,6 +47,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
+        if: steps.check.outputs.published == 'false'
         working-directory: plugin
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

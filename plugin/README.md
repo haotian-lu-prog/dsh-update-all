@@ -2,6 +2,8 @@
 
 English | [中文](README.zh-CN.md)
 
+[![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
+
 A DSH Web plugin that adds **Check for Updates...** (「检查更新」in Chinese) to
 **Settings → General**, right next to Permission, Language, Appearance and Font
 Size.
@@ -19,10 +21,10 @@ separately installed `dsh-update-all` script.
 ## Install
 
 ```bash
-# from npm (once published)
+# from npm
 dsh plugin --profile web add dsh-update-plugin
 
-# from a local checkout / this repository
+# from a local checkout (development)
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 

@@ -1,6 +1,7 @@
 # dsh-update-all
 
 [![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 一条命令更新 **DeepSeek Harness (DSH)**、随包的 `@deepseek-ai/dsh-*` 以及
@@ -50,10 +51,10 @@ shell 脚本。
 ![设置 → 通用设置里的「检查更新」](plugin/assets/screenshots/general-zh.webp)
 
 ```bash
-# 从 npm 安装（发布之后）
+# 从 npm 安装
 dsh plugin --profile web add dsh-update-plugin
 
-# 首次 npm 发布前，也可以直接从本仓库安装
+# 本地开发 / 从本仓库安装
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
