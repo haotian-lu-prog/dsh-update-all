@@ -2,8 +2,8 @@
 #
 # dsh-update-all installer.
 #
-# One-liner (after you replace YOUR_GITHUB_USER):
-#   curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/dsh-update-all/main/install.sh | bash
+# One-liner:
+#   curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
 #
 # Options:
 #   --dir <dir>       install directory (default: ~/.local/bin)
@@ -19,7 +19,7 @@
 
 set -euo pipefail
 
-REPO="${DSH_UPDATE_ALL_REPO:-YOUR_GITHUB_USER/dsh-update-all}"
+REPO="${DSH_UPDATE_ALL_REPO:-haotian-lu-prog/dsh-update-all}"
 REF="${DSH_UPDATE_ALL_REF:-main}"
 INSTALL_DIR="${DSH_UPDATE_INSTALL_DIR:-$HOME/.local/bin}"
 LOCAL_SRC=""
@@ -69,7 +69,7 @@ if [ -n "$LOCAL_SRC" ]; then
   install -m 755 "$LOCAL_SRC" "$TARGET"
 else
   case "$REPO" in
-    YOUR_GITHUB_USER/*)
+    haotian-lu-prog/*)
       die "set DSH_UPDATE_ALL_REPO=<owner/repo> or edit REPO at the top of install.sh" ;;
   esac
   URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-all.sh"

@@ -7,7 +7,7 @@ Only the latest release of `dsh-update-all` is supported with security fixes.
 ## Reporting a vulnerability
 
 Please report security issues privately through
-[GitHub Security Advisories](https://github.com/YOUR_GITHUB_USER/dsh-update-all/security/advisories/new)
+[GitHub Security Advisories](https://github.com/haotian-lu-prog/dsh-update-all/security/advisories/new)
 rather than opening a public issue. We aim to acknowledge reports within a few
 days.
 

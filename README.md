@@ -1,6 +1,6 @@
 # dsh-update-all
 
-[![CI](https://github.com/YOUR_GITHUB_USER/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USER/dsh-update-all/actions/workflows/ci.yml)
+[![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Update **DeepSeek Harness (DSH)**, its bundled `@deepseek-ai/dsh-*` packages and
@@ -56,13 +56,13 @@ that npm's `latest` dist-tag is not always the newest DSH release.
 ### One-liner
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/dsh-update-all/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
 ```
 
 ### Manual
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USER/dsh-update-all.git
+git clone https://github.com/haotian-lu-prog/dsh-update-all.git
 cd dsh-update-all
 ./install.sh --local dsh-update-all.sh
 ```

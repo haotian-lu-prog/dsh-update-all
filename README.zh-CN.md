@@ -1,6 +1,6 @@
 # dsh-update-all
 
-[![CI](https://github.com/YOUR_GITHUB_USER/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USER/dsh-update-all/actions/workflows/ci.yml)
+[![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 一条命令更新 **DeepSeek Harness (DSH)**、随包的 `@deepseek-ai/dsh-*` 以及
@@ -53,13 +53,13 @@ DSH 的更新通常分散在至少两个地方：
 ### 一行安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/dsh-update-all/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
 ```
 
 ### 手动安装
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USER/dsh-update-all.git
+git clone https://github.com/haotian-lu-prog/dsh-update-all.git
 cd dsh-update-all
 ./install.sh --local dsh-update-all.sh
 ```

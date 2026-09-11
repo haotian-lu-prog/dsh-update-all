@@ -3,7 +3,7 @@
 # dsh-update-all — update DeepSeek Harness (DSH), its bundled packages and
 # every profile plugin, in one command.
 #
-# Project: https://github.com/YOUR_GITHUB_USER/dsh-update-all
+# Project: https://github.com/haotian-lu-prog/dsh-update-all
 # License: MIT
 #
 # This script only needs bash + node + the package manager you already use

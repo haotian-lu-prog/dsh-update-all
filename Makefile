@@ -32,6 +32,6 @@ format:
 
 set-repo:
 	@test -n "$(OWNER)" || { printf '%s\n' 'usage: make set-repo OWNER=your-github-user' >&2; exit 1; }
-	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md SECURITY.md dsh-update-all.sh install.sh .github/ISSUE_TEMPLATE/config.yml
-	rm -f README.md.bak README.zh-CN.md.bak CHANGELOG.md.bak SECURITY.md.bak dsh-update-all.sh.bak install.sh.bak .github/ISSUE_TEMPLATE/config.yml.bak
+	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md dsh-update-all.sh install.sh .github/ISSUE_TEMPLATE/config.yml
+	rm -f README.md.bak README.zh-CN.md.bak CHANGELOG.md.bak CONTRIBUTING.md.bak SECURITY.md.bak dsh-update-all.sh.bak install.sh.bak .github/ISSUE_TEMPLATE/config.yml.bak
 	@printf '%s\n' 'Repository owner set to $(OWNER)'

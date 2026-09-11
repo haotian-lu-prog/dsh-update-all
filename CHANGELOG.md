@@ -22,5 +22,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - English and Chinese README.
 - Mock-based test suite and GitHub Actions CI.
 
-[Unreleased]: https://github.com/YOUR_GITHUB_USER/dsh-update-all/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/YOUR_GITHUB_USER/dsh-update-all/releases/tag/v0.1.0
+[Unreleased]: https://github.com/haotian-lu-prog/dsh-update-all/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.0

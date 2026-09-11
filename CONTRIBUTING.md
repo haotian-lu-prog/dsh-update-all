@@ -13,7 +13,7 @@ Thanks for taking the time to improve `dsh-update-all`!
 ## Development setup
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USER/dsh-update-all.git
+git clone https://github.com/haotian-lu-prog/dsh-update-all.git
 cd dsh-update-all
 
 # run the test suite (uses mocks, never touches your real DSH)
