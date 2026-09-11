@@ -1,0 +1,10 @@
+# dsh-update-plugin bundle patch
+#
+# Installed with the official CLI:
+#
+#   dsh plugin --profile <name> add dsh-update-plugin
+#
+# — appends this single insert (one plugin row) to the bundle stack.
+- insert:
+    - id: dsh-update-plugin
+      name: dsh-update-plugin

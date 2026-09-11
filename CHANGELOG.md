@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `dsh-update-plugin` DSH Web plugin: a **Check for Updates... / 检查更新** row
+  in Settings → General that updates the CLI and all profile plugins with
+  built-in logic (npm dist-tags resolution, profile discovery, backups, npm/pnpm
+  CLI detection and per-profile `dsh plugin` updates).
+- Host endpoints `/api/dsh-update-plugin/status` and
+  `/api/dsh-update-plugin/update`, restricted to loopback same-origin requests.
+- Fallbacks documented in `plugin/README.md`: the plugin can always be updated
+  from the terminal, and a broken plugin cannot break DSH itself.
+
 ### Documentation
 
 - Document the `brew trust` step required by Homebrew 6+ before installing

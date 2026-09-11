@@ -39,6 +39,22 @@ DSH 的更新通常分散在至少两个地方：
   `minimumReleaseAge` 的 `--min-age <分钟>`。
 - **体积小**：单个 Bash 脚本，兼容 macOS 自带的 Bash 3.2。
 
+## DSH Web 插件
+
+`dsh-update-plugin` 会在 DSH Web 的 **设置 → 通用设置** 里加入一行
+「检查更新」，和权限、语言、外观、字号大小同级。它内置更新逻辑，可以检查并更新
+CLI 和所有 profile 插件，不依赖 Homebrew，也不需要单独安装 shell 脚本。
+
+```bash
+# 从 npm 安装（发布之后）
+dsh plugin --profile web add dsh-update-plugin
+
+# 首次 npm 发布前，也可以直接从本仓库安装
+dsh plugin --profile web add /path/to/dsh-update-all/plugin
+```
+
+安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)。
+
 ## 环境要求
 
 - macOS 或 Linux（WSL 可用）

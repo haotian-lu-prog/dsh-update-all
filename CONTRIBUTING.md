@@ -42,9 +42,16 @@ for development beyond `bash` and `node`.
 
 ## Tests
 
-The test suite creates a temporary `HOME` and `DSH_HOME`, puts fake `npm`,
-`dsh` and `pnpm` executables first in `PATH`, and asserts on the commands that
-were executed. It covers:
+Run the shell updater tests and the DSH plugin tests:
+
+```bash
+make test          # dsh-update-all shell tests
+make plugin-test   # plugin/ Node test suite
+```
+
+The shell test suite creates a temporary `HOME` and `DSH_HOME`, puts fake
+`npm`, `dsh` and `pnpm` executables first in `PATH`, and asserts on the commands
+that were executed. It covers:
 
 - help and version output
 - `--dry-run` not changing anything
@@ -66,6 +73,11 @@ were executed. It covers:
    (URL + sha256) on `main`, so Homebrew points at the new version immediately.
 6. If the project URL changed, run `make set-repo OWNER=<owner>` so every
    placeholder — including the formula's `homepage` and `url` — is updated.
+
+The DSH plugin in [`plugin/`](plugin/) is a separate npm package. Release it
+independently by bumping `plugin/package.json`, tagging
+`plugin-vX.Y.Z`, and letting the **Publish plugin** workflow publish it
+(requires the `NPM_TOKEN` secret).
 
 ## Code of conduct
 

@@ -14,3 +14,6 @@
 
 # build artefacts
 /dist/
+
+# plugin development
+plugin/node_modules/

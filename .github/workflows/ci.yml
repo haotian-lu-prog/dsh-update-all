@@ -39,6 +39,13 @@ jobs:
       - name: Homebrew formula syntax check
         run: ruby -c Formula/dsh-update-all.rb
 
+      - name: Plugin checks
+        run: |
+          node --check plugin/lib/index.js
+          node --check plugin/lib/client.js
+          node --check plugin/lib/update-core.js
+          cd plugin && node --test test/*.test.mjs
+
       - name: Run test suite
         run: bash tests/run-tests.sh
 

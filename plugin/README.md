@@ -1,0 +1,109 @@
+# dsh-update-plugin
+
+English | [中文](README.zh-CN.md)
+
+A DSH Web plugin that adds **Check for Updates...** (「检查更新」in Chinese) to
+**Settings → General**, right next to Permission, Language, Appearance and Font
+Size.
+
+From one row you can check for a newer DeepSeek Harness release and update:
+
+- the global `@deepseek-ai/dsh` CLI and every bundled `@deepseek-ai/dsh-*` package;
+- every profile's plugins under `~/.dsh/profiles/*`.
+
+The update logic is built into the plugin. It does **not** require Homebrew or a
+separately installed `dsh-update-all` script.
+
+## Install
+
+```bash
+# from npm (once published)
+dsh plugin --profile web add dsh-update-plugin
+
+# from a local checkout / this repository
+dsh plugin --profile web add /path/to/dsh-update-all/plugin
+```
+
+Then restart DSH Web, open **Settings → General**, and look for the
+**Check for Updates...** row.
+
+## Usage
+
+- The row shows the current and newest versions plus the number of profiles.
+- **Check for updates** refreshes the status (it also refreshes after
+  reconnecting).
+- **Update now** updates the CLI and then every profile with dependencies.
+  The host creates a backup under `~/.dsh/update-backups/` before changing
+  anything.
+- After a successful update, restart DSH Web to load the new code.
+
+The update only runs when the page is loopback and same-origin; a remote DSH Web
+session can read the version but cannot start an update.
+
+## Fallbacks
+
+Two fallbacks are built in on purpose:
+
+1. **The plugin can always be upgraded from the terminal**, even when the
+   Settings row is broken or hidden:
+   ```bash
+   dsh plugin --profile web add dsh-update-plugin@latest
+   ```
+2. **A broken plugin never breaks DSH itself.** If the Settings slot or the
+   browser bundle contract changes, the row disappears or shows an error; the
+   rest of DSH keeps working. The manual commands shown in the row are always:
+   ```bash
+   dsh plugin --profile web update --latest
+   dsh plugin --profile web add dsh-update-plugin@latest
+   ```
+
+## Compatibility
+
+| DSH version | Status |
+| --- | --- |
+| `0.1.0-rc.8` | expected to work |
+| `0.1.1-rc.2` | expected to work |
+| `0.1.2-rc.1` | expected to work |
+| `0.1.5-rc.1` | expected to work |
+| `0.1.5-rc.2` | tested |
+
+DSH is pre-1.0, so a major release may rename a client slot or change a public
+service. When that happens this plugin needs a small compatibility release; the
+fallback commands above keep users unblocked meanwhile.
+
+## How it works
+
+- **Client half** (`lib/client.js`) registers into the public
+  `settings.general.item` slot used by the native General rows, and talks to two
+  loopback endpoints.
+- **Host half** (`lib/index.js`, `lib/update-core.js`) resolves the newest
+  version across all npm dist-tags, discovers profiles, backs them up, updates
+  the CLI with npm or pnpm, and updates each profile through
+  `dsh plugin --profile <name> update --latest` (with a `pnpm update` fallback).
+- Only Node built-ins are used, so there is no extra dependency to trust.
+
+## Release
+
+1. Bump `version` in `plugin/package.json` and add the release notes.
+2. Commit, then tag and push:
+   ```bash
+   git tag plugin-vX.Y.Z
+   git push origin plugin-vX.Y.Z
+   ```
+3. The **Publish plugin** workflow publishes the package to npm. It needs a
+   repository secret named `NPM_TOKEN` with publish rights for
+   `dsh-update-plugin`.
+
+## Development
+
+```bash
+cd plugin
+node --test test/
+node --check lib/index.js
+node --check lib/client.js
+node --check lib/update-core.js
+```
+
+## License
+
+[MIT](LICENSE)

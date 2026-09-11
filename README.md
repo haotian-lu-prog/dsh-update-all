@@ -40,6 +40,24 @@ that npm's `latest` dist-tag is not always the newest DSH release.
   `--min-age <minutes>` for pnpm's `minimumReleaseAge` supply-chain delay.
 - **Small**: a single Bash script; works with macOS's default Bash 3.2.
 
+## DSH Web plugin
+
+`dsh-update-plugin` adds **Check for Updates...** /「检查更新」to DSH Web's
+**Settings → General**, next to Permission, Language, Appearance and Font Size.
+It checks and updates the CLI and every profile plugin with built-in logic —
+no Homebrew and no separately installed shell script required.
+
+```bash
+# from npm (once published)
+dsh plugin --profile web add dsh-update-plugin
+
+# or from this repository before the first npm release
+dsh plugin --profile web add /path/to/dsh-update-all/plugin
+```
+
+See [`plugin/`](plugin/) for installation, compatibility, fallbacks and
+development notes.
+
 ## Requirements
 
 - macOS or Linux (WSL works)
