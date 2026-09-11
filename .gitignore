@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# local test output
+/tmp/
+/out/
+*.log
+
+# build artefacts
+/dist/

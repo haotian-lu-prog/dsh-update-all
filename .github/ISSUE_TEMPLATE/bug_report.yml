@@ -1,0 +1,77 @@
+name: Bug report
+description: Something did not work as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! Please run `dsh-update-all --dry-run` when
+        possible and redact any secrets from the output.
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: macOS 15.6 / Ubuntu 24.04 / WSL
+    validations:
+      required: true
+
+  - type: input
+    id: bash
+    attributes:
+      label: bash version
+      description: Output of `bash --version | head -1`
+      placeholder: "GNU bash, version 3.2.57(1)-release ..."
+    validations:
+      required: true
+
+  - type: input
+    id: dsh
+    attributes:
+      label: dsh version
+      description: Output of `dsh --version`
+      placeholder: 0.1.5-rc.2
+    validations:
+      required: true
+
+  - type: input
+    id: updater
+    attributes:
+      label: dsh-update-all version
+      description: Output of `dsh-update-all --version`
+      placeholder: 0.1.0
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command you ran
+      render: shell
+      value: dsh-update-all --dry-run
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues before opening this one
+          required: true
+        - label: I am running the latest release of dsh-update-all
+          required: true
