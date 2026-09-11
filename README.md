@@ -58,6 +58,8 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin
 See [`plugin/`](plugin/) for installation, compatibility, fallbacks and
 development notes. If pnpm's `minimumReleaseAge` policy blocks the install,
 add `--config.minimum-release-age=0` to the `dsh plugin add` command.
+Always mount the plugin with `dsh plugin add` (not plain `pnpm add`) so it
+joins `dsh.profile.bundles`.
 
 ## Requirements
 

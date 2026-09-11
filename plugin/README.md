@@ -33,6 +33,12 @@ that single install:
 dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
 ```
 
+> **Always mount with `dsh plugin add`, not plain `pnpm add`.** The official
+> command also appends the package to `dsh.profile.bundles`; a bare `pnpm add`
+> only installs the dependency, so the Settings row never appears. If you
+already used `pnpm add`, run the `dsh plugin ... add` command again — it is
+idempotent and performs the bundle reconciliation.
+
 Then restart DSH Web, open **Settings → General**, and look for the
 **Check for Updates...** row.
 

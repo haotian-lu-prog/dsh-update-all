@@ -30,6 +30,11 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin
 dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
 ```
 
+> **一定要用 `dsh plugin add` 挂载，不要只用 `pnpm add`。** 官方命令还会把包
+> 追加到 `dsh.profile.bundles`；直接 `pnpm add` 只装依赖，不写 bundle 列表，
+> 设置里就不会出现这一行。如果已经用 `pnpm add` 装过，再执行一次
+> `dsh plugin ... add` 即可，它会完成挂载（幂等）。
+
 然后重启 DSH Web，打开 **设置 → 通用设置**，就能看到「检查更新」这一行。
 
 ## 使用
