@@ -3,6 +3,7 @@
 [English](README.md) | 中文
 
 [![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
+[![Topic: dsh-plugin](https://img.shields.io/badge/topic-dsh--plugin-0f766e)](https://github.com/topics/dsh-plugin)
 
 一个 DSH Web 插件，在 **设置 → 通用设置** 里加入一行「检查更新」，和权限、语言、
 外观、字号大小同级。
