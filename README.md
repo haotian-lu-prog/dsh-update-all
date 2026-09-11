@@ -51,6 +51,7 @@ with an update badge. The update logic is built in — no Homebrew and no
 separately installed shell script required.
 
 ![Check for Updates... in DSH Settings → General](plugin/assets/screenshots/general-en.webp)
+![Update reminder in the right sidebar](plugin/assets/screenshots/sidebar-en.webp)
 
 ```bash
 # from npm
@@ -61,7 +62,8 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
 See [`plugin/`](plugin/) for installation, compatibility, fallbacks and
-development notes. If pnpm's `minimumReleaseAge` policy blocks the install,
+development notes. Community announcement copy is available in
+[`docs/announcement.md`](docs/announcement.md). If pnpm's `minimumReleaseAge` policy blocks the install,
 add `--config.minimum-release-age=0` to the `dsh plugin add` command.
 Always mount the plugin with `dsh plugin add` (not plain `pnpm add`) so it
 joins `dsh.profile.bundles`.

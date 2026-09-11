@@ -49,6 +49,8 @@ DSH 的更新通常分散在至少两个地方：
 shell 脚本。
 
 ![设置 → 通用设置里的「检查更新」](plugin/assets/screenshots/general-zh.webp)
+![设置 → 检查更新完整页面](plugin/assets/screenshots/settings-page-zh.webp)
+![测试更新提醒](plugin/assets/screenshots/test-reminder-zh.webp)
 
 ```bash
 # 从 npm 安装
@@ -58,7 +60,8 @@ dsh plugin --profile web add dsh-update-plugin
 dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ```
 
-安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)。如果 pnpm 的
+安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)；社区公告文案见
+[`docs/announcement.md`](docs/announcement.md)。如果 pnpm 的
 `minimumReleaseAge` 策略阻止安装，在 `dsh plugin add` 命令后加
 `--config.minimum-release-age=0` 即可。请务必用 `dsh plugin add` 挂载，
 不要只用 `pnpm add`，否则不会写入 `dsh.profile.bundles`。
