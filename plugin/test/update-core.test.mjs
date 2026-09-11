@@ -7,11 +7,14 @@ import test from "node:test";
 import {
   checkStatus,
   fetchTargetVersion,
+  listBackups,
+  readConfig,
   isNewerVersion,
   listProfiles,
   pickNewestVersion,
   runCommand,
   runUpdate,
+  writeConfig,
 } from "../lib/update-core.js";
 
 test("pickNewestVersion follows semver across dist-tags", () => {
@@ -189,4 +192,67 @@ test("runUpdate updates the CLI and every profile with mocked commands", async (
     delete process.env.FAKE_NPM_ROOT;
     delete process.env.FAKE_PNPM_ROOT;
   }
+});
+
+test("config round-trips through the DSH home", async () => {
+  const home = await mkdtemp(join(tmpdir(), "dsh-update-config-"));
+  assert.deepEqual(await readConfig(home), { channel: "auto", minAge: 0 });
+
+  const saved = await writeConfig(home, { channel: "next", minAge: 1440 });
+  assert.deepEqual(saved, { channel: "next", minAge: 1440 });
+  assert.deepEqual(await readConfig(home), { channel: "next", minAge: 1440 });
+
+  assert.deepEqual(await writeConfig(home, { channel: "bogus", minAge: -5 }), { channel: "auto", minAge: 0 });
+});
+
+test("fetchTargetVersion honours the configured channel", async () => {
+  const fakeFetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ latest: "0.1.5-rc.1", next: "0.1.5-rc.2", alpha: "0.1.5-alpha.2" }),
+  });
+  assert.equal(await fetchTargetVersion(fakeFetch), "0.1.5-rc.2");
+  assert.equal(await fetchTargetVersion(fakeFetch, { channel: "stable" }), "0.1.5-rc.1");
+  assert.equal(await fetchTargetVersion(fakeFetch, { channel: "next" }), "0.1.5-rc.2");
+  assert.equal(await fetchTargetVersion(fakeFetch, { channel: "alpha" }), "0.1.5-alpha.2");
+
+  const onlyStable = async () => ({ ok: true, status: 200, json: async () => ({ latest: "0.1.5" }) });
+  await assert.rejects(fetchTargetVersion(onlyStable, { channel: "next" }), /dist-tag/);
+});
+
+test("listBackups normalizes plugin and shell manifests", async () => {
+  const home = await mkdtemp(join(tmpdir(), "dsh-update-backups-"));
+  const root = join(home, "update-backups");
+  await mkdir(join(root, "plugin-20260101T000000"), { recursive: true });
+  await writeFile(
+    join(root, "plugin-20260101T000000", "manifest.json"),
+    JSON.stringify({
+      source: "dsh-update-plugin",
+      createdAt: "2026-01-01T00:00:00Z",
+      cliVersion: "0.1.5-rc.1",
+      profileNames: ["web"],
+    }),
+  );
+  await mkdir(join(root, "20260102T000000"), { recursive: true });
+  await writeFile(
+    join(root, "20260102T000000", "manifest.json"),
+    JSON.stringify({
+      timestamp: "2026-01-02T00:00:00Z",
+      cli_version: "0.1.5-rc.2",
+      profiles: ["web", "headless"],
+    }),
+  );
+
+  const backups = await listBackups(home);
+  assert.equal(backups.length, 2);
+
+  const plugin = backups.find((backup) => backup.id.startsWith("plugin-"));
+  assert.deepEqual(plugin.profiles, ["web"]);
+  assert.equal(plugin.cliVersion, "0.1.5-rc.1");
+  assert.equal(plugin.source, "dsh-update-plugin");
+
+  const shell = backups.find((backup) => backup.id === "20260102T000000");
+  assert.deepEqual(shell.profiles, ["web", "headless"]);
+  assert.equal(shell.cliVersion, "0.1.5-rc.2");
+  assert.equal(shell.source, "dsh-update-all");
 });

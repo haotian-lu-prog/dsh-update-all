@@ -24,7 +24,9 @@
     "cordis.patch.yml",
     "README.md",
     "README.zh-CN.md",
-    "LICENSE"
+    "LICENSE",
+    "assets",
+    "CHANGELOG.md"
   ],
   "dsh": {
     "bundle": {
@@ -53,5 +55,11 @@
     "dsh-plugin",
     "updater",
     "cordis"
-  ]
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

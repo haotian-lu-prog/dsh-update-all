@@ -14,6 +14,8 @@ From one row you can check for a newer DeepSeek Harness release and update:
 The update logic is built into the plugin. It does **not** require Homebrew or a
 separately installed `dsh-update-all` script.
 
+![Check for Updates... in Settings → General](assets/screenshots/general-en.webp)
+
 ## Install
 
 ```bash
@@ -44,13 +46,21 @@ Then restart DSH Web, open **Settings → General**, and look for the
 
 ## Usage
 
+- **Settings → General** shows a quick **Check for Updates...** row.
+- **Settings → Check for Updates...** (left navigation) is the full page: status,
+  update channel, minimum release age, profiles, backups and rollback.
+- A native **right-sidebar tab** shows a badge when an update is available; click
+  it to check or update without leaving the conversation.
 - The row shows the current and newest versions plus the number of profiles.
 - **Check for updates** refreshes the status (it also refreshes after
   reconnecting).
 - **Update now** updates the CLI and then every profile with dependencies.
   The host creates a backup under `~/.dsh/update-backups/` before changing
   anything.
-- After a successful update, restart DSH Web to load the new code.
+- The full page lets you choose the update channel (`auto`, `stable`, `next`,
+  `alpha`), set a `minimumReleaseAge` (minutes), list profiles, and roll back to
+  any backup.
+- After a successful update or rollback, restart DSH Web to load the new code.
 
 The update only runs when the page is loopback and same-origin; a remote DSH Web
 session can read the version but cannot start an update.
@@ -92,9 +102,12 @@ fallback commands above keep users unblocked meanwhile.
   `settings.general.item` slot used by the native General rows, and talks to two
   loopback endpoints.
 - **Host half** (`lib/index.js`, `lib/update-core.js`) resolves the newest
-  version across all npm dist-tags, discovers profiles, backs them up, updates
-  the CLI with npm or pnpm, and updates each profile through
-  `dsh plugin --profile <name> update --latest` (with a `pnpm update` fallback).
+  version across all npm dist-tags (or a chosen channel), discovers profiles,
+  backs them up, updates the CLI with npm or pnpm, and updates each profile
+  through `dsh plugin --profile <name> update --latest` (with a `pnpm update`
+  fallback).
+- Host endpoints: `/status`, `/update`, `/config`, `/backups` and `/rollback`
+  under `/api/dsh-update-plugin/`.
 - Only Node built-ins are used, so there is no extra dependency to trust.
 
 ## Release
@@ -113,7 +126,7 @@ fallback commands above keep users unblocked meanwhile.
 
 ```bash
 cd plugin
-node --test test/
+npm test                # node --test test/*.test.mjs
 node --check lib/index.js
 node --check lib/client.js
 node --check lib/update-core.js

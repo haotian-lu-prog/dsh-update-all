@@ -1,13 +1,25 @@
 // dsh-update-plugin host half.
 //
-// Registers two loopback-only endpoints next to the DSH web server:
+// Registers loopback-only endpoints next to the DSH web server:
 //
-//   GET  /api/dsh-update-plugin/status   current/target version + job state
-//   POST /api/dsh-update-plugin/update   start an update job
+//   GET  /api/dsh-update-plugin/status    current/target version + job state
+//   POST /api/dsh-update-plugin/update    start an update job
+//   GET  /api/dsh-update-plugin/config    read channel/minAge
+//   POST /api/dsh-update-plugin/config    write channel/minAge
+//   GET  /api/dsh-update-plugin/backups   list backups
+//   POST /api/dsh-update-plugin/rollback  start a rollback job
 //
 // The real work lives in update-core.js.
 
-import { checkStatus, runUpdate, runtimeFromProcess } from "./update-core.js";
+import {
+  checkStatus,
+  listBackups,
+  readConfig,
+  rollbackBackup,
+  runUpdate,
+  runtimeFromProcess,
+  writeConfig,
+} from "./update-core.js";
 
 export const name = "dsh-update-plugin";
 export const inject = ["webServer"];
@@ -15,6 +27,9 @@ export const inject = ["webServer"];
 const HEADER = "x-dsh-update-plugin";
 const STATUS_PATH = "/api/dsh-update-plugin/status";
 const UPDATE_PATH = "/api/dsh-update-plugin/update";
+const CONFIG_PATH = "/api/dsh-update-plugin/config";
+const BACKUPS_PATH = "/api/dsh-update-plugin/backups";
+const ROLLBACK_PATH = "/api/dsh-update-plugin/rollback";
 const LOG_LIMIT = 200;
 
 function header(request, key) {
@@ -33,7 +48,7 @@ function isLoopbackAddress(value) {
   );
 }
 
-function isTrustedUpdateRequest(request) {
+function isTrustedRequest(request) {
   if (header(request, HEADER) !== "1") return false;
   if (!isLoopbackAddress(request.socket?.remoteAddress)) return false;
   const site = header(request, "sec-fetch-site");
@@ -65,8 +80,34 @@ function json(response, statusCode, value) {
   response.end(JSON.stringify(value));
 }
 
+function readJsonBody(request, limit = 1 << 20) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    let size = 0;
+    const chunks = [];
+    request.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        rejectPromise(new Error("body too large"));
+        request.destroy?.();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on("end", () => {
+      try {
+        const text = Buffer.concat(chunks).toString("utf8");
+        resolvePromise(text ? JSON.parse(text) : {});
+      } catch (error) {
+        rejectPromise(error);
+      }
+    });
+    request.on("error", rejectPromise);
+  });
+}
+
 const job = {
   running: false,
+  kind: null,
   phase: "idle",
   logs: [],
   error: null,
@@ -86,8 +127,9 @@ function snapshot() {
   return {
     ...(job.status || {}),
     running: job.running,
+    kind: job.kind,
     phase: job.phase,
-    logs: job.logs.slice(-20),
+    logs: job.logs.slice(-40),
     error: job.error,
     result: job.result,
     restartRequired: job.restartRequired,
@@ -109,6 +151,7 @@ async function handleStatus(runtime, refresh, response) {
     job.result = null;
     job.finishedAt = 0;
     job.restartRequired = false;
+    job.kind = null;
     job.phase = "idle";
   }
   const status = await checkStatus(runtime, { onLine: () => {} });
@@ -116,6 +159,7 @@ async function handleStatus(runtime, refresh, response) {
   json(response, 200, {
     ...status,
     running: false,
+    kind: null,
     phase: "idle",
     logs: [],
     error: null,
@@ -124,9 +168,10 @@ async function handleStatus(runtime, refresh, response) {
   });
 }
 
-function startUpdate(runtime, ctx) {
+function startJob(kind, runner, ctx) {
   job.running = true;
-  job.phase = "checking";
+  job.kind = kind;
+  job.phase = kind === "rollback" ? "rollback" : "checking";
   job.logs = [];
   job.error = null;
   job.result = null;
@@ -142,26 +187,28 @@ function startUpdate(runtime, ctx) {
     try {
       ctx?.logger?.info?.(`dsh-update-plugin: ${line}`);
     } catch {
-      // logging must never break the update
+      // logging must never break the job
     }
   };
 
   void (async () => {
     try {
-      const result = await runUpdate(runtime, { onPhase, onLog });
+      const result = await runner(onPhase, onLog);
       job.result = result;
-      job.status = {
-        ...(job.status || {}),
-        currentVersion: result.cliUpdated ? result.targetVersion : result.currentVersion,
-        targetVersion: result.targetVersion,
-        updateAvailable: false,
-      };
+      if (kind === "update") {
+        job.status = {
+          ...(job.status || {}),
+          currentVersion: result.cliUpdated ? result.targetVersion : result.currentVersion,
+          targetVersion: result.targetVersion,
+          updateAvailable: false,
+        };
+      }
       if (result.ok) {
         job.phase = "done";
         job.restartRequired = true;
       } else {
         job.phase = "error";
-        job.error = result.errors.join("; ") || "更新失败。";
+        job.error = result.errors?.join("; ") || "更新失败。";
       }
     } catch (error) {
       job.phase = "error";
@@ -175,16 +222,78 @@ function startUpdate(runtime, ctx) {
 }
 
 function handleUpdate(runtime, request, response, ctx) {
-  if (!isTrustedUpdateRequest(request)) {
+  if (!isTrustedRequest(request)) {
     json(response, 403, { error: "forbidden" });
     return;
   }
   if (job.running) {
-    json(response, 409, { error: "update already running" });
+    json(response, 409, { error: "job already running" });
     return;
   }
-  startUpdate(runtime, ctx);
-  json(response, 202, { started: true });
+  startJob("update", (onPhase, onLog) => runUpdate(runtime, { onPhase, onLog }), ctx);
+  json(response, 202, { started: true, kind: "update" });
+}
+
+async function handleRollback(runtime, request, response, ctx) {
+  if (!isTrustedRequest(request)) {
+    json(response, 403, { error: "forbidden" });
+    return;
+  }
+  if (job.running) {
+    json(response, 409, { error: "job already running" });
+    return;
+  }
+  let body = {};
+  try {
+    body = await readJsonBody(request);
+  } catch (error) {
+    json(response, 400, { error: publicError(error) });
+    return;
+  }
+  let backupId = typeof body.id === "string" ? body.id : "";
+  if (!backupId) {
+    const backups = await listBackups(runtime.dshHome).catch(() => []);
+    backupId = backups[0]?.id || "";
+  }
+  if (!backupId) {
+    json(response, 404, { error: "no backup found" });
+    return;
+  }
+  startJob("rollback", (_onPhase, onLog) => rollbackBackup(runtime, backupId, { onLine: onLog }), ctx);
+  json(response, 202, { started: true, kind: "rollback", id: backupId });
+}
+
+async function handleConfig(runtime, request, response) {
+  try {
+    if (request.method === "GET" || request.method === "HEAD") {
+      json(response, 200, await readConfig(runtime.dshHome));
+      return;
+    }
+    if (request.method !== "POST") {
+      json(response, 405, { error: "method not allowed" });
+      return;
+    }
+    if (!isTrustedRequest(request)) {
+      json(response, 403, { error: "forbidden" });
+      return;
+    }
+    const body = await readJsonBody(request);
+    json(response, 200, await writeConfig(runtime.dshHome, body));
+  } catch (error) {
+    json(response, 500, { error: publicError(error) });
+  }
+}
+
+async function handleBackups(runtime, request, response) {
+  try {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      json(response, 405, { error: "method not allowed" });
+      return;
+    }
+    json(response, 200, { backups: await listBackups(runtime.dshHome) });
+  } catch (error) {
+    json(response, 500, { error: publicError(error) });
+  }
 }
 
 export function apply(ctx) {
@@ -218,10 +327,40 @@ export function apply(ctx) {
       ctx.webServer.register({
         kind: "exact",
         path: UPDATE_PATH,
-        handler: (request, response) => {
-          handleUpdate(runtime, request, response, ctx);
-        },
+        handler: (request, response) => handleUpdate(runtime, request, response, ctx),
       }),
     "dsh-update-plugin: update endpoint",
+  );
+
+  ctx.effect(
+    () =>
+      ctx.webServer.register({
+        kind: "exact",
+        path: CONFIG_PATH,
+        handler: (request, response) => handleConfig(runtime, request, response),
+      }),
+    "dsh-update-plugin: config endpoint",
+  );
+
+  ctx.effect(
+    () =>
+      ctx.webServer.register({
+        kind: "exact",
+        path: BACKUPS_PATH,
+        handler: (request, response) => handleBackups(runtime, request, response),
+      }),
+    "dsh-update-plugin: backups endpoint",
+  );
+
+  ctx.effect(
+    () =>
+      ctx.webServer.register({
+        kind: "exact",
+        path: ROLLBACK_PATH,
+        handler: (request, response) => {
+          void handleRollback(runtime, request, response, ctx);
+        },
+      }),
+    "dsh-update-plugin: rollback endpoint",
   );
 }

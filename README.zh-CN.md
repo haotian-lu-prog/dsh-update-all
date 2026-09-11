@@ -42,8 +42,12 @@ DSH 的更新通常分散在至少两个地方：
 ## DSH Web 插件
 
 `dsh-update-plugin` 会在 DSH Web 的 **设置 → 通用设置** 里加入一行
-「检查更新」，和权限、语言、外观、字号大小同级。它内置更新逻辑，可以检查并更新
-CLI 和所有 profile 插件，不依赖 Homebrew，也不需要单独安装 shell 脚本。
+「检查更新」，和权限、语言、外观、字号大小同级。它还提供完整的
+**设置 → 检查更新** 页面（频道、`--min-age`、profiles、备份、回滚）以及带更新
+角标的**右侧边栏原生 tab**。更新逻辑内置，不依赖 Homebrew，也不需要单独安装
+shell 脚本。
+
+![设置 → 通用设置里的「检查更新」](plugin/assets/screenshots/general-zh.webp)
 
 ```bash
 # 从 npm 安装（发布之后）

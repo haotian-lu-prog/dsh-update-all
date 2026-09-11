@@ -19,6 +19,34 @@ export const MIN_AGE = process.env.DSH_UPDATE_MIN_AGE ?? "0";
 export const CLI_TIMEOUT_MS = 10 * 60 * 1000;
 export const PROFILE_TIMEOUT_MS = 5 * 60 * 1000;
 
+export const CONFIG_FILENAME = "dsh-update-plugin.json";
+export const DEFAULT_CONFIG = { channel: "auto", minAge: 0 };
+const CHANNELS = new Set(["auto", "stable", "next", "alpha"]);
+
+export function normalizeConfig(raw) {
+  const source = raw && typeof raw === "object" ? raw : {};
+  const config = { ...DEFAULT_CONFIG, ...source };
+  if (!CHANNELS.has(config.channel)) config.channel = DEFAULT_CONFIG.channel;
+  const minAge = Number(config.minAge);
+  config.minAge = Number.isInteger(minAge) && minAge >= 0 ? minAge : DEFAULT_CONFIG.minAge;
+  return config;
+}
+
+export async function readConfig(dshHome) {
+  try {
+    return normalizeConfig(JSON.parse(await readFile(join(dshHome, CONFIG_FILENAME), "utf8")));
+  } catch {
+    return { ...DEFAULT_CONFIG };
+  }
+}
+
+export async function writeConfig(dshHome, patch) {
+  const next = normalizeConfig({ ...(await readConfig(dshHome)), ...(patch || {}) });
+  await mkdir(dshHome, { recursive: true });
+  await writeFile(join(dshHome, CONFIG_FILENAME), `${JSON.stringify(next, null, 2)}\n`, "utf8");
+  return next;
+}
+
 // ---------------------------------------------------------------------------
 // semver helpers
 // ---------------------------------------------------------------------------
@@ -273,6 +301,13 @@ export async function fetchTargetVersion(fetchImpl = globalThis.fetch, options =
   });
   if (!response || !response.ok) throw new Error(`registry returned HTTP ${response ? response.status : "?"}`);
   const tags = await response.json();
+  const channel = options.channel || "auto";
+  if (channel !== "auto") {
+    const tagName = channel === "stable" ? "latest" : channel;
+    const version = tags[tagName];
+    if (!version) throw new Error(`dist-tag "${tagName}" not found for ${PACKAGE_NAME}`);
+    return version;
+  }
   const newest = pickNewestVersion(tags);
   if (!newest) throw new Error(`no published versions found for ${PACKAGE_NAME}`);
   return newest;
@@ -328,6 +363,118 @@ export async function createBackup(runtime, profiles, currentVersion) {
     await copyIfExists(join(profile.dir, "pnpm-lock.yaml"), join(target, "pnpm-lock.yaml"));
   }
   return dir;
+}
+
+export async function listBackups(dshHome) {
+  const root = join(dshHome, "update-backups");
+  let entries = [];
+  try {
+    entries = await readdir(root, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const backups = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const dir = join(root, entry.name);
+    let manifest = {};
+    try {
+      manifest = JSON.parse(await readFile(join(dir, "manifest.json"), "utf8"));
+    } catch {
+      continue;
+    }
+    backups.push({
+      id: entry.name,
+      dir,
+      source: manifest.source || "dsh-update-all",
+      createdAt: manifest.createdAt || manifest.timestamp || null,
+      cliVersion: manifest.cliVersion || manifest.cli_version || null,
+      targetVersion: manifest.targetVersion || manifest.target_version || null,
+      profiles: manifest.profileNames || manifest.profiles || [],
+    });
+  }
+  backups.sort((a, b) => String(b.id).localeCompare(String(a.id)));
+  return backups;
+}
+
+export async function rollbackBackup(runtime, backupId, options = {}) {
+  if (!backupId || backupId.includes("/") || backupId.includes("\\")) {
+    throw new Error(`invalid backup id: ${backupId}`);
+  }
+  const dir = join(runtime.dshHome, "update-backups", backupId);
+  const manifest = JSON.parse(await readFile(join(dir, "manifest.json"), "utf8"));
+  const names = manifest.profileNames || manifest.profiles || [];
+  const profiles = await listProfiles(runtime.dshHome);
+  const byName = new Map(profiles.map((profile) => [profile.name, profile]));
+
+  const result = {
+    ok: true,
+    id: backupId,
+    cliVersion: manifest.cliVersion || manifest.cli_version || null,
+    cliRestored: false,
+    profiles: [],
+    errors: [],
+    finishedAt: null,
+  };
+
+  for (const name of names) {
+    const profile = byName.get(name) || { name, dir: join(runtime.dshHome, "profiles", name) };
+    const backupProfileDir = join(dir, "profiles", name);
+    try {
+      await mkdir(profile.dir, { recursive: true });
+      await copyIfExists(join(backupProfileDir, "package.json"), join(profile.dir, "package.json"));
+      await copyIfExists(join(backupProfileDir, "pnpm-lock.yaml"), join(profile.dir, "pnpm-lock.yaml"));
+      try {
+        await runCommand({
+          ...cliInvocation(runtime, ["plugin", "--profile", name, "install", "--frozen-lockfile"]),
+          cwd: profile.dir,
+          timeoutMs: PROFILE_TIMEOUT_MS,
+          onLine: options.onLine,
+        });
+      } catch {
+        try {
+          await runCommand({
+            cmd: "pnpm",
+            args: ["install", "--frozen-lockfile"],
+            cwd: profile.dir,
+            timeoutMs: PROFILE_TIMEOUT_MS,
+            onLine: options.onLine,
+            shell: process.platform === "win32",
+          });
+        } catch {
+          await runCommand({
+            cmd: "pnpm",
+            args: ["install"],
+            cwd: profile.dir,
+            timeoutMs: PROFILE_TIMEOUT_MS,
+            onLine: options.onLine,
+            shell: process.platform === "win32",
+          });
+        }
+      }
+      result.profiles.push({ name, ok: true });
+    } catch (error) {
+      result.ok = false;
+      result.errors.push(`${name}: ${error.message}`);
+      result.profiles.push({ name, ok: false, error: error.message });
+    }
+  }
+
+  if (result.cliVersion) {
+    const current = await currentCliVersion(runtime).catch(() => "");
+    if (current !== result.cliVersion) {
+      try {
+        await installCli(runtime, result.cliVersion, { onLine: options.onLine });
+        result.cliRestored = true;
+      } catch (error) {
+        result.ok = false;
+        result.errors.push(`CLI: ${error.message}`);
+      }
+    }
+  }
+
+  result.finishedAt = new Date().toISOString();
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -394,13 +541,14 @@ export async function installCli(runtime, version, options = {}) {
 // ---------------------------------------------------------------------------
 // profile update
 // ---------------------------------------------------------------------------
-function minAgeArgs() {
-  if (MIN_AGE === "" || MIN_AGE === undefined || MIN_AGE === null) return [];
-  return [`--config.minimum-release-age=${MIN_AGE}`];
+function minAgeArgs(minAge = MIN_AGE) {
+  if (minAge === "" || minAge === undefined || minAge === null) return [];
+  return [`--config.minimum-release-age=${minAge}`];
 }
 
 export async function updateProfile(runtime, profile, options = {}) {
-  const dshArgs = ["plugin", "--profile", profile.name, "update", "--latest", ...minAgeArgs()];
+  const minAge = options.minAge === undefined ? MIN_AGE : options.minAge;
+  const dshArgs = ["plugin", "--profile", profile.name, "update", "--latest", ...minAgeArgs(minAge)];
   try {
     await runCommand({
       ...cliInvocation(runtime, dshArgs),
@@ -412,7 +560,7 @@ export async function updateProfile(runtime, profile, options = {}) {
   } catch (error) {
     options.onLine?.(`dsh plugin failed for ${profile.name}: ${error.message}`);
   }
-  const pnpmArgs = ["update", "--latest", ...minAgeArgs()];
+  const pnpmArgs = ["update", "--latest", ...minAgeArgs(minAge)];
   await runCommand({
     cmd: "pnpm",
     args: pnpmArgs,
@@ -428,13 +576,14 @@ export async function updateProfile(runtime, profile, options = {}) {
 // status / update orchestration
 // ---------------------------------------------------------------------------
 export async function checkStatus(runtime, options = {}) {
+  const config = options.config || (await readConfig(runtime.dshHome));
   const currentVersion = options.currentVersion !== undefined
     ? options.currentVersion
     : await currentCliVersion(runtime, { onLine: options.onLine }).catch(() => "");
   let targetVersion = null;
   let targetError = null;
   try {
-    targetVersion = await fetchTargetVersion(options.fetchImpl || globalThis.fetch, options);
+    targetVersion = await fetchTargetVersion(options.fetchImpl || globalThis.fetch, { ...options, channel: config.channel });
   } catch (error) {
     targetError = error instanceof Error ? error.message : String(error);
   }
@@ -447,7 +596,9 @@ export async function checkStatus(runtime, options = {}) {
     targetError,
     updateAvailable: Boolean(targetVersion && (!currentVersion || isNewerVersion(currentVersion, targetVersion))),
     profiles: profiles.map((profile) => ({ name: profile.name, dependencyCount: profile.dependencyCount })),
-    minAge: MIN_AGE,
+    config,
+    channel: config.channel,
+    minAge: config.minAge,
     checkedAt: new Date().toISOString(),
   };
 }
@@ -455,11 +606,12 @@ export async function checkStatus(runtime, options = {}) {
 export async function runUpdate(runtime, hooks = {}) {
   const onPhase = hooks.onPhase || (() => {});
   const onLog = hooks.onLog || (() => {});
+  const config = hooks.config || (await readConfig(runtime.dshHome));
   onPhase("checking");
   const currentVersion = await currentCliVersion(runtime, { onLine: onLog });
-  const targetVersion = await fetchTargetVersion(hooks.fetchImpl || globalThis.fetch, hooks);
+  const targetVersion = await fetchTargetVersion(hooks.fetchImpl || globalThis.fetch, { ...hooks, channel: config.channel });
   const profiles = await listProfiles(runtime.dshHome);
-  onLog(`current: ${currentVersion || "unknown"}; target: ${targetVersion}; profiles: ${profiles.map((profile) => profile.name).join(", ") || "none"}`);
+  onLog(`current: ${currentVersion || "unknown"}; target: ${targetVersion}; channel: ${config.channel}; minAge: ${config.minAge}; profiles: ${profiles.map((profile) => profile.name).join(", ") || "none"}`);
 
   onPhase("backup");
   const backupDir = await createBackup(runtime, profiles, currentVersion);
@@ -470,6 +622,8 @@ export async function runUpdate(runtime, hooks = {}) {
     currentVersion,
     targetVersion,
     backupDir,
+    channel: config.channel,
+    minAge: config.minAge,
     cliUpdated: false,
     cliInstaller: null,
     profiles: [],
@@ -498,7 +652,7 @@ export async function runUpdate(runtime, hooks = {}) {
       onPhase(`profile:${profile.name}`);
       onLog(`updating profile ${profile.name} (${profile.dependencyCount} dependencies)`);
       try {
-        const update = await updateProfile(runtime, profile, { onLine: onLog });
+        const update = await updateProfile(runtime, profile, { onLine: onLog, minAge: config.minAge });
         result.profiles.push({ name: profile.name, ok: true, via: update.via });
         onLog(`profile ${profile.name} updated via ${update.via}`);
       } catch (error) {

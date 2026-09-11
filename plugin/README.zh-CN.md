@@ -13,6 +13,8 @@
 更新逻辑完整内置在插件里，**不依赖 Homebrew，也不依赖单独安装的
 `dsh-update-all` 脚本**。
 
+![设置 → 通用设置里的「检查更新」](assets/screenshots/general-zh.webp)
+
 ## 安装
 
 ```bash
@@ -39,11 +41,18 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-rel
 
 ## 使用
 
+- **设置 → 通用设置** 里有快捷的「检查更新」一行。
+- **设置 → 检查更新**（左侧导航）是完整页面：状态、更新频道、最小释出时间、
+  profiles、备份和回滚。
+- **右侧边栏**有一个原生 tab，有更新时显示角标，点击即可检查或更新，不必离开
+  当前会话。
 - 行内显示当前版本、最新版本和 profile 数量。
 - **检查更新**：刷新状态。
 - **立即更新**：先更新 CLI，再更新每个有依赖的 profile；更新前会自动把
   `package.json` / `pnpm-lock.yaml` 备份到 `~/.dsh/update-backups/`。
-- 更新成功后重启 DSH Web 加载新代码。
+- 完整页面可以选择更新频道（`auto` / `stable` / `next` / `alpha`）、设置
+  `minimumReleaseAge`（分钟）、查看 profile 列表，并回滚到任意备份。
+- 更新或回滚成功后重启 DSH Web 加载新代码。
 
 只有 loopback 且同源的页面可以触发更新；远程访问只能查看版本状态，不能执行更新。
 
@@ -79,10 +88,12 @@ DSH 目前是 0.x，大版本可能重命名客户端槽或调整公开服务。
 
 - **浏览器半边**（`lib/client.js`）注册到官方公开的 `settings.general.item`
   槽，和原生的通用设置行使用同一套机制；只和两个 loopback 接口通信。
-- **宿主半边**（`lib/index.js`、`lib/update-core.js`）解析 npm 全部 dist-tags
-  中的最高版本、动态发现 profile、备份、用 npm 或 pnpm 更新 CLI，再用
+- **宿主半边**（`lib/index.js`、`lib/update-core.js`）按频道解析 npm
+  dist-tags、动态发现 profile、备份、用 npm 或 pnpm 更新 CLI，再用
   `dsh plugin --profile <name> update --latest` 更新每个 profile（失败时回退
   `pnpm update`）。
+- 宿主接口：`/api/dsh-update-plugin/` 下的 `/status`、`/update`、`/config`、
+  `/backups`、`/rollback`。
 - 只使用 Node 内置模块，没有额外需要信任的依赖。
 
 ## 发布

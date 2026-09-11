@@ -44,8 +44,12 @@ that npm's `latest` dist-tag is not always the newest DSH release.
 
 `dsh-update-plugin` adds **Check for Updates...** /「检查更新」to DSH Web's
 **Settings → General**, next to Permission, Language, Appearance and Font Size.
-It checks and updates the CLI and every profile plugin with built-in logic —
-no Homebrew and no separately installed shell script required.
+It also adds a full **Settings → Check for Updates...** page (channels,
+`--min-age`, profiles, backups and rollback) and a native **right-sidebar tab**
+with an update badge. The update logic is built in — no Homebrew and no
+separately installed shell script required.
+
+![Check for Updates... in DSH Settings → General](plugin/assets/screenshots/general-en.webp)
 
 ```bash
 # from npm (once published)

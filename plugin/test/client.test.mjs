@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("client bundle registers the General settings row", async () => {
+test("client bundle registers the General row, settings page and sidebar card", async () => {
   let loaded;
   globalThis.window = {
     __ModuleLoader__: {
@@ -39,37 +39,85 @@ test("client bundle registers the General settings row", async () => {
   assert.equal(typeof exports.apply, "function");
 
   const effects = [];
+  const slotNames = [];
   const registrations = [];
-  const ctx = {
-    effect(fn) {
-      effects.push(fn() || (() => {}));
+  const tabTypes = [];
+  const openTabs = [];
+
+  const slots = {
+    inject(name, callback) {
+      slotNames.push(name);
+      callback();
     },
+    register(options, component) {
+      registrations.push({ options, component });
+      return () => {};
+    },
+  };
+
+  const makeEffect = (fn) => {
+    effects.push(fn() || (() => {}));
+  };
+
+  const ctx = {
+    effect: makeEffect,
     locale: {
+      bind() {
+        return (key) => key;
+      },
       register() {
         return () => {};
       },
     },
-    slots: {
-      inject(name, callback) {
-        assert.equal(name, "settings.general.item");
-        callback();
-      },
-      register(options, component) {
-        registrations.push({ options, component });
-        return () => {};
-      },
+    slots,
+    inject(deps, callback) {
+      assert.deepEqual(deps, ["sidebarRightTabs", "sidebarRight"]);
+      const sideCtx = {
+        effect: makeEffect,
+        slots,
+        sidebarRight: {
+          openTab(id) {
+            openTabs.push(id);
+          },
+        },
+        sidebarRightTabs: {
+          register(definition) {
+            tabTypes.push(definition);
+            return () => {};
+          },
+        },
+      };
+      callback(sideCtx);
     },
   };
 
   exports.apply(ctx);
 
-  assert.equal(effects.length, 2);
-  assert.equal(registrations.length, 1);
-  assert.equal(registrations[0].options.name, "settings.general.item");
-  assert.equal(registrations[0].options.id, "dsh-update-plugin");
-  assert.equal(registrations[0].options.locale, "dsh-update-plugin");
-  assert.equal(typeof registrations[0].component, "function");
+  assert.deepEqual(slotNames.sort(), ["settings.general.item", "settings.section"]);
+  assert.equal(effects.length, 5);
+  assert.equal(tabTypes.length, 1);
+  assert.equal(tabTypes[0].id, "dsh-update-plugin");
+  assert.equal(tabTypes[0].kind, "dsh-update-plugin");
+  assert.equal(tabTypes[0].single, true);
 
-  const rendered = registrations[0].component({ t: (key) => key });
+  const names = registrations.map((entry) => entry.options.name).sort();
+  assert.deepEqual(names, [
+    "settings.general.item",
+    "settings.section",
+    "sidebar.right.pane.tab",
+    "sidebar.right.pane.tab.title",
+  ]);
+
+  const general = registrations.find((entry) => entry.options.name === "settings.general.item");
+  assert.equal(general.options.id, "dsh-update-plugin");
+  assert.equal(general.options.locale, "dsh-update-plugin");
+
+  const injected = general.options.inject();
+  assert.equal(typeof injected.openSidebar, "function");
+  assert.equal(typeof injected.showSidebar, "function");
+  injected.openSidebar();
+  assert.deepEqual(openTabs, ["dsh-update-plugin"]);
+
+  const rendered = general.component({ t: (key) => key, showSidebar: () => false });
   assert.equal(rendered.type, "element");
 });
