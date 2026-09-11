@@ -227,7 +227,9 @@ bundled packages are still updated.
 - `make release VERSION=0.1.1` bumps `UPDATER_VERSION`, commits, tags and pushes
   in one step. Add the `CHANGELOG.md` entry first.
 - The [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) checks the
-  latest release once a day and updates the formula automatically.
+  latest release once a day and updates the formula automatically. Add the
+  optional `HOMEBREW_TAP_TOKEN` secret to trigger it immediately after a
+  release.
 - The **Upstream check** workflow runs daily, resolves the newest
   `@deepseek-ai/dsh` version and opens an issue when DSH has moved ahead of the
   version this repository last tracked.

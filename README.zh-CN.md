@@ -213,7 +213,8 @@ DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1
 - `make release VERSION=0.1.1` 会一次性完成版本号更新、提交、打 tag、推送。
   需要先在 `CHANGELOG.md` 里写好对应版本条目。
 - [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) 每天检查最新
-  Release 并自动更新 formula。
+  Release 并自动更新 formula。配置可选的 `HOMEBREW_TAP_TOKEN` secret 后，发布
+  完成即可立即触发同步。
 - **Upstream check** workflow 每天解析 `@deepseek-ai/dsh` 的最新版本，一旦发现
   比本仓库记录的版本更新，就自动开 issue 提醒维护者适配。
 

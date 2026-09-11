@@ -68,6 +68,14 @@ were executed. It covers:
 6. If the project URL changed, run `make set-repo OWNER=<owner>` so every
    placeholder is updated.
 
+### Optional: instant Homebrew sync
+
+By default the `homebrew-tap` workflow syncs the formula once a day. If you
+want a release to trigger it immediately, add a repository secret named
+`HOMEBREW_TAP_TOKEN` containing a fine-grained PAT with **Contents: read and
+write** on `haotian-lu-prog/homebrew-tap`. The `Release` workflow will then
+dispatch the tap workflow right after publishing.
+
 ## Code of conduct
 
 Be kind and constructive. This project follows the spirit of the
