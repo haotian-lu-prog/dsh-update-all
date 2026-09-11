@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-11
+
+### Changed
+
+- The Homebrew formula now lives in this repository
+  (`Formula/dsh-update-all.rb`); the separate `homebrew-tap` repository is no
+  longer needed.
+- The **Release** workflow updates the formula URL and sha256 immediately after
+  publishing the GitHub release, so Homebrew always tracks the newest version
+  without any extra secret.
+- Homebrew install command is now
+  `brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all`
+  followed by `brew install dsh-update-all`.
+
+### Removed
+
+- The optional `HOMEBREW_TAP_TOKEN` secret and the external tap sync step.
+
 ## [0.1.1] - 2026-09-11
 
 ### Added
@@ -48,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - English and Chinese README.
 - Mock-based test suite and GitHub Actions CI.
 
-[Unreleased]: https://github.com/haotian-lu-prog/dsh-update-all/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/haotian-lu-prog/dsh-update-all/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.2
 [0.1.1]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.1
 [0.1.0]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.0

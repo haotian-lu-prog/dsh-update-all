@@ -68,12 +68,13 @@ curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs
 ### Homebrew
 
 ```bash
-brew tap haotian-lu-prog/tap
+brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
 brew install dsh-update-all
 ```
 
-The formula tracks the latest GitHub release; the tap updates itself on a daily
-schedule, so `brew upgrade dsh-update-all` always has the newest updater.
+The formula lives in this repository (`Formula/dsh-update-all.rb`). Every release
+updates its `url` and `sha256` automatically, so `brew upgrade dsh-update-all`
+always has the newest updater. No extra tap repository is required.
 
 ### Manual
 
@@ -226,10 +227,9 @@ bundled packages are still updated.
   and attaches `dsh-update-all.sh` and `install.sh`.
 - `make release VERSION=0.1.1` bumps `UPDATER_VERSION`, commits, tags and pushes
   in one step. Add the `CHANGELOG.md` entry first.
-- The [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) checks the
-  latest release once a day and updates the formula automatically. Add the
-  optional `HOMEBREW_TAP_TOKEN` secret to trigger it immediately after a
-  release.
+- The same workflow also updates `Formula/dsh-update-all.rb` in this
+  repository, so Homebrew points at the new version immediately after a release
+  — no secret and no second repository required.
 - The **Upstream check** workflow runs daily, resolves the newest
   `@deepseek-ai/dsh` version and opens an issue when DSH has moved ahead of the
   version this repository last tracked.

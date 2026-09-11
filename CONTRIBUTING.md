@@ -62,19 +62,10 @@ were executed. It covers:
    annotated tag and pushes both.
 4. The **Release** workflow validates the tag, creates the GitHub release with
    generated notes and attaches `dsh-update-all.sh` / `install.sh`.
-5. The [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap)
-   workflow picks up the new release on its daily schedule, or dispatch the
-   **Update formula** workflow manually for an immediate update.
+5. The same **Release** workflow updates `Formula/dsh-update-all.rb`
+   (URL + sha256) on `main`, so Homebrew points at the new version immediately.
 6. If the project URL changed, run `make set-repo OWNER=<owner>` so every
-   placeholder is updated.
-
-### Optional: instant Homebrew sync
-
-By default the `homebrew-tap` workflow syncs the formula once a day. If you
-want a release to trigger it immediately, add a repository secret named
-`HOMEBREW_TAP_TOKEN` containing a fine-grained PAT with **Contents: read and
-write** on `haotian-lu-prog/homebrew-tap`. The `Release` workflow will then
-dispatch the tap workflow right after publishing.
+   placeholder — including the formula's `homepage` and `url` — is updated.
 
 ## Code of conduct
 

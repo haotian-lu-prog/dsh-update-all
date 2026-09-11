@@ -34,6 +34,10 @@ jobs:
           bash -n dsh-update-all.sh
           bash -n install.sh
           bash -n tests/run-tests.sh
+          bash -n scripts/release.sh
+
+      - name: Homebrew formula syntax check
+        run: ruby -c Formula/dsh-update-all.rb
 
       - name: Run test suite
         run: bash tests/run-tests.sh

@@ -89,4 +89,4 @@ printf '\nreleased v%s\n' "$VERSION"
 printf 'GitHub Actions will now:\n'
 printf '  - run CI and the release version check\n'
 printf '  - create the GitHub release and attach dsh-update-all.sh / install.sh\n'
-printf '  - update haotian-lu-prog/homebrew-tap (daily schedule, or dispatch it manually)\n'
+printf '  - update Formula/dsh-update-all.rb so Homebrew tracks the new version immediately\n'

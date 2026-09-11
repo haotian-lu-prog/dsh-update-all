@@ -39,14 +39,63 @@ jobs:
           gh release upload "$GITHUB_REF_NAME" \
             dsh-update-all.sh install.sh --clobber
 
-      - name: Trigger Homebrew tap update (optional)
+  homebrew:
+    name: Update Homebrew formula
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Update Formula/dsh-update-all.rb
         env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          TAG: ${{ github.ref_name }}
         run: |
-          if [ -z "${GH_TOKEN:-}" ]; then
-            echo "HOMEBREW_TAP_TOKEN is not set; homebrew-tap updates on its own daily schedule."
+          version="${TAG#v}"
+          formula="Formula/dsh-update-all.rb"
+          if [ ! -f "$formula" ]; then
+            echo "::error::$formula not found"
+            exit 1
+          fi
+
+          current="$(sed -nE 's|.*/tags/v([0-9][0-9.]*)\.tar\.gz.*|\1|p' "$formula" | head -n1)"
+          if [ "$current" = "$version" ]; then
+            echo "formula already tracks v${version}"
             exit 0
           fi
-          gh workflow run update-formula.yml \
-            --repo haotian-lu-prog/homebrew-tap || \
-            echo "::warning::could not trigger homebrew-tap, it will update on its next schedule"
+          if [ -n "$current" ] && [ "$(printf '%s\n%s\n' "$current" "$version" | sort -V | tail -n1)" != "$version" ]; then
+            echo "formula tracks ${current}, which is newer than ${version}; skipping"
+            exit 0
+          fi
+
+          url="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          sha="$(curl -fsSL "$url" | sha256sum | awk '{print $1}')"
+
+          python3 - "$formula" "$url" "$sha" <<'PY'
+          import re
+          import sys
+
+          path, url, sha = sys.argv[1], sys.argv[2], sys.argv[3]
+          src = open(path).read()
+          src, n1 = re.subn(r'^  url ".*"$', f'  url "{url}"', src, count=1, flags=re.M)
+          src, n2 = re.subn(r'^  sha256 ".*"$', f'  sha256 "{sha}"', src, count=1, flags=re.M)
+          if n1 != 1 or n2 != 1:
+              raise SystemExit("could not update formula")
+          open(path, "w").write(src)
+          PY
+
+          ruby -c "$formula"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$formula"
+          if git diff --cached --quiet; then
+            echo "formula is already up to date"
+            exit 0
+          fi
+          git commit -m "chore(homebrew): track ${TAG}"
+          git push origin main

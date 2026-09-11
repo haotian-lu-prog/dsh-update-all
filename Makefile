@@ -17,6 +17,7 @@ lint:
 	bash -n dsh-update-all.sh
 	bash -n install.sh
 	bash -n tests/run-tests.sh
+	@if command -v ruby >/dev/null 2>&1; then ruby -c Formula/dsh-update-all.rb; else printf '%s\n' 'ruby not installed, skipping formula check'; fi
 	@if command -v shellcheck >/dev/null 2>&1; then \
 		shellcheck dsh-update-all.sh install.sh tests/run-tests.sh; \
 	else \
@@ -39,6 +40,6 @@ release:
 
 set-repo:
 	@test -n "$(OWNER)" || { printf '%s\n' 'usage: make set-repo OWNER=your-github-user' >&2; exit 1; }
-	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g; s|haotian-lu-prog|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md dsh-update-all.sh install.sh .github/ISSUE_TEMPLATE/config.yml .github/workflows/release.yml .github/workflows/upstream-check.yml
-	rm -f README.md.bak README.zh-CN.md.bak CHANGELOG.md.bak CONTRIBUTING.md.bak SECURITY.md.bak dsh-update-all.sh.bak install.sh.bak .github/ISSUE_TEMPLATE/config.yml.bak .github/workflows/release.yml.bak .github/workflows/upstream-check.yml.bak
+	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g; s|haotian-lu-prog|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md dsh-update-all.sh install.sh Formula/dsh-update-all.rb .github/ISSUE_TEMPLATE/config.yml .github/workflows/release.yml .github/workflows/upstream-check.yml
+	rm -f README.md.bak README.zh-CN.md.bak CHANGELOG.md.bak CONTRIBUTING.md.bak SECURITY.md.bak dsh-update-all.sh.bak install.sh.bak Formula/dsh-update-all.rb.bak .github/ISSUE_TEMPLATE/config.yml.bak .github/workflows/release.yml.bak .github/workflows/upstream-check.yml.bak
 	@printf '%s\n' 'Repository owner set to $(OWNER)'

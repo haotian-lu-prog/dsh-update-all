@@ -65,12 +65,13 @@ curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs
 ### Homebrew
 
 ```bash
-brew tap haotian-lu-prog/tap
+brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
 brew install dsh-update-all
 ```
 
-formula 会跟踪最新的 GitHub Release，tap 每天自动同步，`brew upgrade
-dsh-update-all` 即可升级 updater 本身。
+formula 就在本仓库里（`Formula/dsh-update-all.rb`），每次发版会自动更新
+`url` 和 `sha256`，`brew upgrade dsh-update-all` 就能拿到最新版，不需要独立
+的 tap 仓库。
 
 ### 手动安装
 
@@ -212,9 +213,9 @@ DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1
   并附带 `dsh-update-all.sh` 和 `install.sh`。
 - `make release VERSION=0.1.1` 会一次性完成版本号更新、提交、打 tag、推送。
   需要先在 `CHANGELOG.md` 里写好对应版本条目。
-- [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) 每天检查最新
-  Release 并自动更新 formula。配置可选的 `HOMEBREW_TAP_TOKEN` secret 后，发布
-  完成即可立即触发同步。
+- 同一个 Release workflow 还会更新本仓库里的
+  `Formula/dsh-update-all.rb`，所以发布完成后 Homebrew 立刻指向新版本，
+  不需要额外 secret，也不需要第二个仓库。
 - **Upstream check** workflow 每天解析 `@deepseek-ai/dsh` 的最新版本，一旦发现
   比本仓库记录的版本更新，就自动开 issue 提醒维护者适配。
 
