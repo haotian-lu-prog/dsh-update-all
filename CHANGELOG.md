@@ -12,8 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   in Settings → General that updates the CLI and all profile plugins with
   built-in logic (npm dist-tags resolution, profile discovery, backups, npm/pnpm
   CLI detection and per-profile `dsh plugin` updates).
-- Host endpoints `/api/dsh-update-plugin/status` and
-  `/api/dsh-update-plugin/update`, restricted to loopback same-origin requests.
+- Full **Settings → Check for Updates...** section page: update channel
+  (`auto` / `stable` / `next` / `alpha`), `minimumReleaseAge`, profile details,
+  backup list and rollback.
+- Native DSH right-sidebar tab with a live update badge and a compact
+  check/update panel.
+- Host endpoints `/api/dsh-update-plugin/status`, `/update`, `/config`,
+  `/backups` and `/rollback`, all mutating ones restricted to loopback
+  same-origin requests.
+- Plugin screenshots in the English and Chinese READMEs.
 - Fallbacks documented in `plugin/README.md`: the plugin can always be updated
   from the terminal, and a broken plugin cannot break DSH itself.
 
