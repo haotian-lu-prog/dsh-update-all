@@ -69,8 +69,8 @@ if [ -n "$LOCAL_SRC" ]; then
   install -m 755 "$LOCAL_SRC" "$TARGET"
 else
   case "$REPO" in
-    haotian-lu-prog/*)
-      die "set DSH_UPDATE_ALL_REPO=<owner/repo> or edit REPO at the top of install.sh" ;;
+    */*) : ;;
+    *) die "--repo must be <owner>/<repo> (got: $REPO)" ;;
   esac
   URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-all.sh"
   TMP="$(mktemp "${TMPDIR:-/tmp}/dsh-update-all.XXXXXX")"
