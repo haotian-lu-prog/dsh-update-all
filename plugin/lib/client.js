@@ -112,6 +112,8 @@ window.__ModuleLoader__.load({
       testStop: "停止测试",
       testReminder: "测试提醒：发现可用更新（仅测试，不会真的更新）",
       testReminderMeta: "仅用于验证角标和提醒效果",
+      notificationTitle: "DSH 有可用更新",
+      notificationBody: "测试提醒：仅用于验证浏览器通知和角标（不会真的更新）",
     };
 
     var EN = {
@@ -169,6 +171,8 @@ window.__ModuleLoader__.load({
       testStop: "Stop test",
       testReminder: "Test reminder: update available (test only, nothing is updated)",
       testReminderMeta: "Only used to verify the badge and reminder UI",
+      notificationTitle: "DSH update available",
+      notificationBody: "Test reminder: only verifying the browser notification and badge (nothing is updated)",
     };
 
     function injectStyle() {
@@ -227,6 +231,26 @@ window.__ModuleLoader__.load({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ id: id }),
       }).then(parseJson);
+    }
+
+    function sendBrowserNotification(t) {
+      try {
+        if (typeof Notification === "undefined") return;
+        var show = function () {
+          try {
+            new Notification(t("notificationTitle"), { body: t("notificationBody") });
+          } catch (error) {}
+        };
+        if (Notification.permission === "granted") {
+          show();
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission()
+            .then(function (permission) {
+              if (permission === "granted") show();
+            })
+            .catch(function () {});
+        }
+      } catch (error) {}
     }
 
     function manualCommands(profileName) {
@@ -473,7 +497,11 @@ window.__ModuleLoader__.load({
           "div",
           { className: "dsu-main", key: "main" },
           [
-            h("div", { className: "dsu-title", key: "title" }, t("title")),
+            h(
+              "div",
+              { className: "dsu-title", key: "title" },
+              [t("title"), data.updateAvailable || data.testReminder ? h("span", { className: "dsu-badge", key: "dot" }) : null],
+            ),
             h("div", { className: "dsu-desc", key: "desc" }, description),
             meta ? h("div", { className: "dsu-meta", key: "meta" }, meta) : null,
             updater.state.error ? h("div", { className: "dsu-error", key: "error" }, updater.state.error) : null,
@@ -648,7 +676,13 @@ window.__ModuleLoader__.load({
                       type: "button",
                       className: "dsu-btn",
                       onClick: function () {
-                        setTestReminder(!test, 60000);
+                        if (test) {
+                          setTestReminder(false);
+                          return;
+                        }
+                        if (typeof props.openSidebar === "function") props.openSidebar();
+                        sendBrowserNotification(t);
+                        setTestReminder(true, 10000);
                       },
                     },
                     test ? t("testStop") : t("testStart"),
@@ -1004,6 +1038,15 @@ window.__ModuleLoader__.load({
               return t("title");
             },
             locale: NS,
+            inject: function () {
+              return {
+                openSidebar: function () {
+                  if (sidebarRight && typeof sidebarRight.openTab === "function") {
+                    sidebarRight.openTab(SIDEBAR_ID);
+                  }
+                },
+              };
+            },
           },
           function SettingsPageWrapper(props) {
             return h(SettingsPage, Object.assign({}, props, { t: props.t || t }));

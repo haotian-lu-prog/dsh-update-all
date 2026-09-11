@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- **Send test reminder / 测试更新提醒** button in the settings page: simulates
-  an available update for 60 seconds so the right-sidebar badge and reminder
-  copy can be verified without a real release.
+- **Send test reminder / 测试更新提醒** button in the settings page: opens the
+  sidebar tab, sends a browser notification (permission required) and shows the
+  update badge for 10 seconds, so the reminder can be verified without a real
+  release.
 
 ## [0.1.0] - 2026-09-12
 
