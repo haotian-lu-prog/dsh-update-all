@@ -51,6 +51,9 @@ Then restart DSH Web, open **Settings → General**, and look for the
   update channel, minimum release age, profiles, backups and rollback.
 - A native **right-sidebar tab** shows a badge when an update is available; click
   it to check or update without leaving the conversation.
+- The status card has a **Send test reminder** button that simulates an available
+  update for 60 seconds, so you can verify the sidebar badge and reminder copy
+  without waiting for a real release.
 - The row shows the current and newest versions plus the number of profiles.
 - **Check for updates** refreshes the status (it also refreshes after
   reconnecting).

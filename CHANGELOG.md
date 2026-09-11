@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `/backups` and `/rollback`, all mutating ones restricted to loopback
   same-origin requests.
 - Plugin screenshots in the English and Chinese READMEs.
+- A **Send test reminder / 测试更新提醒** button in the plugin settings page,
+  simulating an available update for 60 seconds so the sidebar badge can be
+  verified without a real release.
 - Fallbacks documented in `plugin/README.md`: the plugin can always be updated
   from the terminal, and a broken plugin cannot break DSH itself.
 

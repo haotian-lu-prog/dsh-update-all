@@ -46,6 +46,8 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-rel
   profiles、备份和回滚。
 - **右侧边栏**有一个原生 tab，有更新时显示角标，点击即可检查或更新，不必离开
   当前会话。
+- 状态卡片里有 **测试更新提醒** 按钮，会模拟 60 秒的「有可用更新」状态，
+  方便验证右侧角标和提醒文案，不用等真实新版本。
 - 行内显示当前版本、最新版本和 profile 数量。
 - **检查更新**：刷新状态。
 - **立即更新**：先更新 CLI，再更新每个有依赖的 profile；更新前会自动把

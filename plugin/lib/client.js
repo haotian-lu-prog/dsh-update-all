@@ -108,6 +108,10 @@ window.__ModuleLoader__.load({
       noJob: "空闲",
       badgeUpdate: "有可用更新",
       hostOutdated: "宿主端接口未加载（HTTP 404），请重启 DSH 后再试。",
+      testStart: "测试更新提醒",
+      testStop: "停止测试",
+      testReminder: "测试提醒：发现可用更新（仅测试，不会真的更新）",
+      testReminderMeta: "仅用于验证角标和提醒效果",
     };
 
     var EN = {
@@ -161,6 +165,10 @@ window.__ModuleLoader__.load({
       noJob: "Idle",
       badgeUpdate: "Update available",
       hostOutdated: "The host endpoints are not loaded yet (HTTP 404). Restart DSH and try again.",
+      testStart: "Send test reminder",
+      testStop: "Stop test",
+      testReminder: "Test reminder: update available (test only, nothing is updated)",
+      testReminderMeta: "Only used to verify the badge and reminder UI",
     };
 
     function injectStyle() {
@@ -231,6 +239,7 @@ window.__ModuleLoader__.load({
     function statusText(t, data, error) {
       if (error) return t("failed");
       if (!data) return t("checking");
+      if (data.testReminder) return t("testReminder");
       if (data.running) {
         var phase = data.phase && data.phase !== "idle" ? " · " + t("phase", { phase: data.phase }) : "";
         return (data.kind === "rollback" ? t("rollbacking") : t("updating")) + phase;
@@ -251,11 +260,63 @@ window.__ModuleLoader__.load({
 
     function metaText(t, data) {
       if (!data) return "";
+      if (data.testReminder) return t("testReminderMeta");
       var parts = [];
       if (data.currentVersion) parts.push(t("current", { version: data.currentVersion }));
       if (data.targetVersion) parts.push(t("target", { version: data.targetVersion }));
       if (data.profiles && data.profiles.length) parts.push(t("profiles", { count: data.profiles.length }));
       return parts.join(" · ");
+    }
+
+    var testReminder = { active: false, until: 0 };
+    var testReminderTimer = null;
+    var testReminderListeners = new Set();
+
+    function notifyTestReminder() {
+      testReminderListeners.forEach(function (listener) {
+        listener();
+      });
+    }
+
+    function setTestReminder(active, durationMs) {
+      var duration = durationMs || 60000;
+      testReminder.active = Boolean(active);
+      testReminder.until = testReminder.active ? Date.now() + duration : 0;
+      if (testReminderTimer) {
+        clearTimeout(testReminderTimer);
+        testReminderTimer = null;
+      }
+      if (testReminder.active) {
+        testReminderTimer = setTimeout(function () {
+          testReminderTimer = null;
+          setTestReminder(false);
+        }, duration);
+      }
+      notifyTestReminder();
+    }
+
+    function useTestReminder() {
+      var pair = React.useState(testReminder.active);
+      var active = pair[0];
+      var setActive = pair[1];
+      React.useEffect(
+        function () {
+          var listener = function () {
+            setActive(testReminder.active);
+          };
+          testReminderListeners.add(listener);
+          return function () {
+            testReminderListeners.delete(listener);
+          };
+        },
+        [setActive],
+      );
+      return active;
+    }
+
+    function applyTestReminder(data, test) {
+      if (!test) return data;
+      return Object.assign({}, data || {}, { updateAvailable: true, testReminder: true });
     }
 
     function useUpdater(t) {
@@ -401,9 +462,10 @@ window.__ModuleLoader__.load({
     function UpdateRow(props) {
       var t = props.t;
       var updater = useUpdater(t);
-      var data = updater.state.data || {};
-      var description = statusText(t, updater.state.data, updater.state.error);
-      var meta = metaText(t, updater.state.data);
+      var test = useTestReminder();
+      var data = applyTestReminder(updater.state.data, test) || {};
+      var description = statusText(t, data, updater.state.error);
+      var meta = metaText(t, data);
       var showSidebar = typeof props.showSidebar === "function" && props.showSidebar();
 
       var children = [
@@ -454,7 +516,7 @@ window.__ModuleLoader__.load({
                 key: "update",
                 type: "button",
                 className: "dsu-btn dsu-btn-primary",
-                disabled: updater.state.loading || updater.running || !data.updateAvailable,
+                disabled: updater.state.loading || updater.running || !data.updateAvailable || Boolean(data.testReminder),
                 onClick: function () {
                   updater.update();
                 },
@@ -485,6 +547,7 @@ window.__ModuleLoader__.load({
     function SettingsPage(props) {
       var t = props.t;
       var updater = useUpdater(t);
+      var test = useTestReminder();
       var configState = useConfig(t);
       var backupsState = useBackups(t);
       var draftPair = React.useState({ channel: "auto", minAge: 0 });
@@ -513,7 +576,7 @@ window.__ModuleLoader__.load({
         [restartRequired, backupsState.load],
       );
 
-      var data = updater.state.data || {};
+      var data = applyTestReminder(updater.state.data, test) || {};
       var profiles = data.profiles || [];
       var backups = backupsState.state.backups || [];
 
@@ -548,8 +611,8 @@ window.__ModuleLoader__.load({
               [
                 h("div", { className: "dsu-main", key: "main" }, [
                   h("div", { className: "dsu-card-title", key: "title" }, t("statusTitle")),
-                  h("div", { className: "dsu-desc", key: "desc" }, statusText(t, updater.state.data, updater.state.error)),
-                  h("div", { className: "dsu-meta", key: "meta" }, metaText(t, updater.state.data)),
+                  h("div", { className: "dsu-desc", key: "desc" }, statusText(t, data, updater.state.error)),
+                  h("div", { className: "dsu-meta", key: "meta" }, metaText(t, data)),
                 ]),
                 h("div", { className: "dsu-control", key: "control" }, [
                   h(
@@ -571,12 +634,24 @@ window.__ModuleLoader__.load({
                       key: "update",
                       type: "button",
                       className: "dsu-btn dsu-btn-primary",
-                      disabled: updater.state.loading || updater.running || !data.updateAvailable,
+                      disabled: updater.state.loading || updater.running || !data.updateAvailable || Boolean(data.testReminder),
                       onClick: function () {
                         updater.update();
                       },
                     },
                     t("update"),
+                  ),
+                  h(
+                    "button",
+                    {
+                      key: "test",
+                      type: "button",
+                      className: "dsu-btn",
+                      onClick: function () {
+                        setTestReminder(!test, 60000);
+                      },
+                    },
+                    test ? t("testStop") : t("testStart"),
                   ),
                 ]),
               ],
@@ -775,7 +850,7 @@ window.__ModuleLoader__.load({
                 key: "update",
                 type: "button",
                 className: "dsu-btn dsu-btn-primary",
-                disabled: updater.state.loading || updater.running || !data.updateAvailable,
+                disabled: updater.state.loading || updater.running || !data.updateAvailable || Boolean(data.testReminder),
                 onClick: function () {
                   updater.update();
                 },
@@ -793,6 +868,7 @@ window.__ModuleLoader__.load({
 
     function SidebarTitle(props) {
       var t = props.t;
+      var test = useTestReminder();
       var pair = React.useState({ updateAvailable: false, running: false });
       var state = pair[0];
       var setState = pair[1];
@@ -826,8 +902,8 @@ window.__ModuleLoader__.load({
         { className: "dsu-title" },
         [
           h("span", { key: "label" }, t("title")),
-          state.updateAvailable || state.running
-            ? h("span", { key: "badge", className: "dsu-badge", title: state.updateAvailable ? t("found", { version: "" }) : t("updating") })
+          state.updateAvailable || state.running || test
+            ? h("span", { key: "badge", className: "dsu-badge", title: state.updateAvailable || test ? t("badgeUpdate") : t("updating") })
             : null,
         ],
       );
