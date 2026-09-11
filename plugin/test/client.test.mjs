@@ -98,7 +98,7 @@ test("client bundle registers the General row, settings page and sidebar card", 
   assert.equal(tabTypes.length, 1);
   assert.equal(tabTypes[0].id, "dsh-update-plugin");
   assert.equal(tabTypes[0].kind, "dsh-update-plugin");
-  assert.equal(tabTypes[0].single, true);
+  assert.equal(typeof tabTypes[0].title, "function");
 
   const names = registrations.map((entry) => entry.options.name).sort();
   assert.deepEqual(names, [

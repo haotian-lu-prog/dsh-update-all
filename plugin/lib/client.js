@@ -855,11 +855,6 @@ window.__ModuleLoader__.load({
               title: function () {
                 return t("title");
               },
-              description: function () {
-                return t("sidebarDescription");
-              },
-              order: 80,
-              single: true,
             });
           },
           "dsh-update-plugin: sidebar tab type",
