@@ -2,7 +2,7 @@ SHELL := /bin/bash
 .PHONY: help install uninstall test lint format set-repo
 
 help:
-	@printf '%s\n' 'Targets:' '  install    install dsh-update-all into ~/.local/bin' '  uninstall  remove the installed command' '  test       run the mock-based test suite' '  lint       bash syntax check + shellcheck (if installed)' '  format     shfmt the shell scripts (if installed)' '  set-repo   replace YOUR_GITHUB_USER placeholders: make set-repo OWNER=name'
+	@printf '%s\n' 'Targets:' '  install    install dsh-update-all into ~/.local/bin' '  uninstall  remove the installed command' '  test       run the mock-based test suite' '  lint       bash syntax check + shellcheck (if installed)' '  format     shfmt the shell scripts (if installed)' '  set-repo   set the GitHub owner in docs and scripts: make set-repo OWNER=name'
 
 install:
 	./install.sh --local dsh-update-all.sh
@@ -32,6 +32,6 @@ format:
 
 set-repo:
 	@test -n "$(OWNER)" || { printf '%s\n' 'usage: make set-repo OWNER=your-github-user' >&2; exit 1; }
-	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md dsh-update-all.sh install.sh .github/ISSUE_TEMPLATE/config.yml
+	sed -i.bak 's|YOUR_GITHUB_USER|$(OWNER)|g; s|haotian-lu-prog|$(OWNER)|g' README.md README.zh-CN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md dsh-update-all.sh install.sh .github/ISSUE_TEMPLATE/config.yml
 	rm -f README.md.bak README.zh-CN.md.bak CHANGELOG.md.bak CONTRIBUTING.md.bak SECURITY.md.bak dsh-update-all.sh.bak install.sh.bak .github/ISSUE_TEMPLATE/config.yml.bak
 	@printf '%s\n' 'Repository owner set to $(OWNER)'

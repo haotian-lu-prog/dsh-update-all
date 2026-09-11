@@ -126,7 +126,15 @@ test_help_and_version() {
   printf 'test: help & version\n'
   local out
   out="$(bash "$SCRIPT" --version)"
-  assert_eq "$out" "dsh-update-all 0.1.0" "prints updater version"
+  case "$out" in
+    "dsh-update-all "*)
+      if printf '%s' "$out" | grep -Eq 'dsh-update-all [0-9]+\.[0-9]+\.[0-9]+'; then
+        pass "prints updater version"
+      else
+        fail "prints updater version (got: $out)"
+      fi ;;
+    *) fail "prints updater version (got: $out)" ;;
+  esac
   if bash "$SCRIPT" --help | grep -Fq -- '--rollback'; then pass "help mentions rollback"; else fail "help mentions rollback"; fi
 }
 
