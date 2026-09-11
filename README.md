@@ -69,8 +69,13 @@ curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs
 
 ```bash
 brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
+brew trust haotian-lu-prog/dsh-update-all
 brew install dsh-update-all
 ```
+
+Homebrew 6+ requires third-party taps to be trusted explicitly; the
+`brew trust` line is a one-time step. On older Homebrew versions without the
+`trust` command, skip that line.
 
 The formula lives in this repository (`Formula/dsh-update-all.rb`). Every release
 updates its `url` and `sha256` automatically, so `brew upgrade dsh-update-all`
@@ -195,6 +200,12 @@ Restart any running `dsh web` / DSH session afterwards to load the new code.
   prefix. It never sends your data anywhere; npm/pnpm talk to their registries.
 
 ## FAQ
+
+**Homebrew says the tap is untrusted. What do I do?**
+Homebrew 6+ does not load formulae from third-party taps until you trust them.
+Run `brew trust haotian-lu-prog/dsh-update-all` (or
+`brew trust --formula haotian-lu-prog/dsh-update-all/dsh-update-all`) once, then
+run `brew install dsh-update-all` again.
 
 **Why is `latest` not the newest version?**
 DSH is still releasing prereleases. At the time of writing,

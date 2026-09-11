@@ -66,8 +66,12 @@ curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs
 
 ```bash
 brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
+brew trust haotian-lu-prog/dsh-update-all
 brew install dsh-update-all
 ```
+
+Homebrew 6+ 默认不加载第三方 tap 的 formula，`brew trust` 是每个 tap 只需
+执行一次的操作；较老版本没有 trust 命令的话跳过这行即可。
 
 formula 就在本仓库里（`Formula/dsh-update-all.rb`），每次发版会自动更新
 `url` 和 `sha256`，`brew upgrade dsh-update-all` 就能拿到最新版，不需要独立
@@ -186,6 +190,12 @@ dsh-update-all --rollback 20260911T211500
   发送数据；npm/pnpm 只会访问它们各自的 registry。
 
 ## 常见问题
+
+**Homebrew 提示 tap 不受信任怎么办？**
+Homebrew 6+ 默认不加载第三方 tap。执行一次
+`brew trust haotian-lu-prog/dsh-update-all`（或
+`brew trust --formula haotian-lu-prog/dsh-update-all/dsh-update-all`），
+然后重新执行 `brew install dsh-update-all` 即可。
 
 **为什么 `latest` 不是最新版？**
 DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1`，而 `next`

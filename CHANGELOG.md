@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Documentation
+
+- Document the `brew trust` step required by Homebrew 6+ before installing
+  formulae from a third-party tap.
+
 ## [0.1.2] - 2026-09-11
 
 ### Changed
