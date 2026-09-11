@@ -71,6 +71,16 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-rel
    dsh plugin --profile web add dsh-update-plugin@latest
    ```
 
+## 常见问题
+
+- **设置里没有这一行/这一页，或者 Save、备份接口报 `HTTP 404`。**
+  浏览器半边可以热加载，但宿主半边（`lib/index.js`）是 DSH 启动时加载的。
+  需要完整重启 DSH（停掉再启动 `dsh web`，或重启 DSH Desktop），然后硬刷新浏览器。
+- **右侧边栏 `+` 菜单里没有这个 tab。**
+  它使用 DSH 原生的 `sidebarRightTabs` API，需要 DSH 0.1.5-rc.1 及以上。
+- **安装时被 pnpm `minimumReleaseAge` 拦截。**
+  在那一次 `dsh plugin add` 命令后加 `--config.minimum-release-age=0`。
+
 ## 兼容性
 
 | DSH 版本 | 状态 |

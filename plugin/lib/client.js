@@ -107,6 +107,7 @@ window.__ModuleLoader__.load({
       forbidden: "仅本机 DSH Web 可以执行此操作。",
       noJob: "空闲",
       badgeUpdate: "有可用更新",
+      hostOutdated: "宿主端接口未加载（HTTP 404），请重启 DSH 后再试。",
     };
 
     var EN = {
@@ -159,6 +160,7 @@ window.__ModuleLoader__.load({
       forbidden: "This action is only available from a local DSH Web page.",
       noJob: "Idle",
       badgeUpdate: "Update available",
+      hostOutdated: "The host endpoints are not loaded yet (HTTP 404). Restart DSH and try again.",
     };
 
     function injectStyle() {
@@ -241,6 +243,12 @@ window.__ModuleLoader__.load({
       return t("checking");
     }
 
+    function friendlyError(t, message) {
+      var text = String(message || "");
+      if (text.indexOf("HTTP 404") !== -1) return t("hostOutdated");
+      return text;
+    }
+
     function metaText(t, data) {
       if (!data) return "";
       var parts = [];
@@ -261,15 +269,15 @@ window.__ModuleLoader__.load({
         });
         return getStatus(Boolean(refresh))
           .then(function (data) {
-            var message = data && (data.error || data.targetError) ? String(data.error || data.targetError) : null;
+            var message = data && (data.error || data.targetError) ? friendlyError(t, data.error || data.targetError) : null;
             setState({ loading: false, data: data, error: message });
             return data;
           })
           .catch(function (error) {
-            setState({ loading: false, data: null, error: String((error && error.message) || error) });
+            setState({ loading: false, data: null, error: friendlyError(t, (error && error.message) || error) });
             return null;
           });
-      }, []);
+      }, [t]);
 
       React.useEffect(
         function () {
@@ -300,7 +308,7 @@ window.__ModuleLoader__.load({
           .then(function (result) {
             if (result && result.error) {
               setState(function (previous) {
-                return { loading: false, data: previous.data, error: result.error };
+                return { loading: false, data: previous.data, error: friendlyError(t, result.error) };
               });
               return result;
             }
@@ -312,7 +320,7 @@ window.__ModuleLoader__.load({
             });
             return null;
           });
-      }, [load]);
+      }, [load, t]);
 
       return { state: state, load: load, update: update, running: running };
     }
@@ -325,12 +333,12 @@ window.__ModuleLoader__.load({
       var load = React.useCallback(function () {
         return getConfig()
           .then(function (config) {
-            setState({ loading: false, config: config, error: config && config.error ? config.error : null, saved: false });
+            setState({ loading: false, config: config, error: config && config.error ? friendlyError(t, config.error) : null, saved: false });
           })
           .catch(function (error) {
-            setState({ loading: false, config: null, error: String((error && error.message) || error), saved: false });
+            setState({ loading: false, config: null, error: friendlyError(t, (error && error.message) || error), saved: false });
           });
-      }, []);
+      }, [t]);
 
       React.useEffect(
         function () {
@@ -346,17 +354,17 @@ window.__ModuleLoader__.load({
         return saveConfig(config)
           .then(function (next) {
             if (next && next.error) {
-              setState({ loading: false, config: config, error: next.error, saved: false });
+              setState({ loading: false, config: config, error: friendlyError(t, next.error), saved: false });
               return null;
             }
             setState({ loading: false, config: next, error: null, saved: true });
             return next;
           })
           .catch(function (error) {
-            setState({ loading: false, config: config, error: String((error && error.message) || error), saved: false });
+            setState({ loading: false, config: config, error: friendlyError(t, (error && error.message) || error), saved: false });
             return null;
           });
-      }, []);
+      }, [t]);
 
       return { state: state, load: load, save: save };
     }
@@ -370,15 +378,15 @@ window.__ModuleLoader__.load({
         return getBackups()
           .then(function (result) {
             if (result && result.error) {
-              setState({ loading: false, backups: [], error: result.error });
+              setState({ loading: false, backups: [], error: friendlyError(t, result.error) });
               return;
             }
             setState({ loading: false, backups: (result && result.backups) || [], error: null });
           })
           .catch(function (error) {
-            setState({ loading: false, backups: [], error: String((error && error.message) || error) });
+            setState({ loading: false, backups: [], error: friendlyError(t, (error && error.message) || error) });
           });
-      }, []);
+      }, [t]);
 
       React.useEffect(
         function () {
@@ -689,6 +697,7 @@ window.__ModuleLoader__.load({
           { className: "dsu-card", key: "backups" },
           [
             h("div", { className: "dsu-card-title", key: "title" }, t("backupsTitle")),
+            backupsState.state.error ? h("div", { className: "dsu-error", key: "error" }, backupsState.state.error) : null,
             backups.length
               ? h(
                   "div",

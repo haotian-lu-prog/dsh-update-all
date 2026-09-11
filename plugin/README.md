@@ -82,6 +82,17 @@ Two fallbacks are built in on purpose:
    dsh plugin --profile web add dsh-update-plugin@latest
    ```
 
+## Troubleshooting
+
+- **The Settings row/page is missing, or Save/backups return `HTTP 404`.**
+  The browser half can hot-reload, but the host half (`lib/index.js`) is loaded
+  when DSH starts. Fully restart DSH (stop and start `dsh web`, or restart DSH
+  Desktop), then hard-refresh the browser.
+- **The right-sidebar tab is not in the `+` menu.** It is registered through the
+  native `sidebarRightTabs` API, which requires DSH 0.1.5-rc.1 or newer.
+- **The install command is rejected by pnpm `minimumReleaseAge`.** Add
+  `--config.minimum-release-age=0` to that single `dsh plugin add` command.
+
 ## Compatibility
 
 | DSH version | Status |
