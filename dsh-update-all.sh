@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-UPDATER_VERSION="0.1.1"
+UPDATER_VERSION="0.1.2"
 PKG="@deepseek-ai/dsh"
 
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
