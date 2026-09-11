@@ -3,7 +3,7 @@
 # dsh-update-all installer.
 #
 # One-liner:
-#   curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
+#   curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
 #
 # Options:
 #   --dir <dir>       install directory (default: ~/.local/bin)
@@ -72,7 +72,10 @@ else
     */*) : ;;
     *) die "--repo must be <owner>/<repo> (got: $REPO)" ;;
   esac
-  URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-all.sh"
+  case "$REF" in
+    main|master) URL="https://raw.githubusercontent.com/$REPO/refs/heads/$REF/dsh-update-all.sh" ;;
+    *)           URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-all.sh" ;;
+  esac
   TMP="$(mktemp "${TMPDIR:-/tmp}/dsh-update-all.XXXXXX")"
   trap 'rm -f "$TMP"' EXIT
   if command -v curl >/dev/null 2>&1; then

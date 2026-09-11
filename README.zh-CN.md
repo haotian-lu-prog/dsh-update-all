@@ -53,7 +53,13 @@ DSH 的更新通常分散在至少两个地方：
 ### 一行安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+```
+
+安装器会从 `refs/heads/main` 拉取最新版 updater。若想直接用 main 分支上的安装器：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
 ```
 
 ### 手动安装

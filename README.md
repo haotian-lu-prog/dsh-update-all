@@ -56,7 +56,13 @@ that npm's `latest` dist-tag is not always the newest DSH release.
 ### One-liner
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/main/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+```
+
+The installer downloads the updater script from `refs/heads/main`, so you always get the newest code. To run the installer itself from the main branch instead of the latest release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
 ```
 
 ### Manual
