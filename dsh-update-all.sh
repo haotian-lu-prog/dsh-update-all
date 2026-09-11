@@ -28,6 +28,7 @@ UPDATE_PLUGINS=1
 DO_BACKUP=1
 ROLLBACK_ID=""
 LIST_BACKUPS=0
+PRINT_TARGET=0
 SELECTED_PROFILES=()
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
@@ -70,6 +71,7 @@ Backup / rollback:
   --rollback [id]        Restore a backup (default: the latest one).
 
 Other:
+  --target-version       Print the newest version that would be installed and exit.
   --install              Install this script to ~/.local/bin/dsh-update-all.
   -h, --help             Show this help.
   -V, --version          Show updater version.
@@ -126,6 +128,7 @@ while [ $# -gt 0 ]; do
       if [ $# -gt 0 ] && [ "${1#-}" = "$1" ]; then
         ROLLBACK_ID="$1"; shift
       fi ;;
+    --target-version) PRINT_TARGET=1; shift ;;
     --install) install_self; exit 0 ;;
     -h|--help) usage; exit 0 ;;
     -V|--version) printf 'dsh-update-all %s\n' "$UPDATER_VERSION"; exit 0 ;;
@@ -148,7 +151,9 @@ esac
 # ---------------------------------------------------------------------------
 command -v node >/dev/null 2>&1 || die "node is required (DSH itself needs Node.js)"
 command -v npm >/dev/null 2>&1 || die "npm is required to query the npm registry"
-[ -d "$DSH_HOME" ] || die "DSH_HOME does not exist: $DSH_HOME"
+if [ "$PRINT_TARGET" -ne 1 ]; then
+  [ -d "$DSH_HOME" ] || die "DSH_HOME does not exist: $DSH_HOME"
+fi
 
 # ---------------------------------------------------------------------------
 # version resolution
@@ -206,6 +211,11 @@ resolve_target_version() {
     || die "could not query npm for $PKG"
   printf '%s' "$tags_json" | node -e "$VERSION_JS" "$CHANNEL"
 }
+
+if [ "$PRINT_TARGET" -eq 1 ]; then
+  resolve_target_version
+  exit 0
+fi
 
 current_cli_version() {
   if command -v dsh >/dev/null 2>&1; then

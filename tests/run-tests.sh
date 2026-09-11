@@ -184,6 +184,14 @@ test_channel_and_min_age() {
   assert_contains "$WORK/out.txt" 'minimum-release-age=1440' "min-age is forwarded to pnpm"
 }
 
+test_target_version() {
+  printf 'test: --target-version\n'
+  setup target-version
+  assert_eq "$(bash "$SCRIPT" --target-version 2>/dev/null)" '0.1.5-rc.2' "prints newest version across all dist-tags"
+  printf '%s' '{"latest":"0.2.0","next":"0.3.0-rc.1","alpha":"0.3.0-alpha.1"}' > "$STATE/dist-tags.json"
+  assert_eq "$(bash "$SCRIPT" --channel stable --target-version 2>/dev/null)" '0.2.0' "respects --channel"
+}
+
 test_profile_filter() {
   printf 'test: --profile\n'
   setup profile
@@ -234,6 +242,7 @@ test_dry_run_does_not_change
 test_full_update
 test_no_cli
 test_channel_and_min_age
+test_target_version
 test_profile_filter
 test_backup_and_rollback
 test_unknown_option

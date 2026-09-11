@@ -62,6 +62,16 @@ curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/dow
 curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
 ```
 
+### Homebrew
+
+```bash
+brew tap haotian-lu-prog/tap
+brew install dsh-update-all
+```
+
+formula 会跟踪最新的 GitHub Release，tap 每天自动同步，`brew upgrade
+dsh-update-all` 即可升级 updater 本身。
+
 ### 手动安装
 
 ```bash
@@ -126,6 +136,7 @@ dsh-update-all --rollback 20260911T211500
 | `--list-backups` | 列出可用备份。 |
 | `--rollback [id]` | 回滚到指定备份（默认最新）。 |
 | `--install` | 把本脚本安装到 `~/.local/bin`。 |
+| `--target-version` | 只打印将要安装的最新版本后退出（适合脚本 / CI）。 |
 | `-h`、`--help` | 查看帮助。 |
 | `-V`、`--version` | 查看 updater 版本。 |
 
@@ -193,6 +204,18 @@ DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1
 
 **没有 profile 怎么办？**
 没关系，插件步骤会自动跳过，CLI 及其 bundle 仍会更新。
+
+## 发布与自动化
+
+- 推送 `v0.1.1` 这样的 tag 会触发 **Release** workflow：校验 tag 与
+  `UPDATER_VERSION` 是否一致，自动创建 GitHub Release、生成 release notes，
+  并附带 `dsh-update-all.sh` 和 `install.sh`。
+- `make release VERSION=0.1.1` 会一次性完成版本号更新、提交、打 tag、推送。
+  需要先在 `CHANGELOG.md` 里写好对应版本条目。
+- [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) 每天检查最新
+  Release 并自动更新 formula。
+- **Upstream check** workflow 每天解析 `@deepseek-ai/dsh` 的最新版本，一旦发现
+  比本仓库记录的版本更新，就自动开 issue 提醒维护者适配。
 
 ## 贡献
 

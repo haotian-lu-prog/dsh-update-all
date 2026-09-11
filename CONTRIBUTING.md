@@ -55,11 +55,16 @@ were executed. It covers:
 
 ## Release process
 
-1. Run `make lint test` with a clean tree.
-2. Update `CHANGELOG.md` and bump `UPDATER_VERSION` in `dsh-update-all.sh`.
-3. Commit, then tag: `git tag -a vX.Y.Z -m "vX.Y.Z"`.
-4. Push the commit and the tag.
-5. Create a GitHub release from the tag and paste the changelog entry.
+1. Make sure `main` is up to date and the working tree is clean.
+2. Add the new version section to `CHANGELOG.md` (Keep a Changelog format).
+3. Run `make release VERSION=x.y.z`.
+   This runs the test suite, bumps `UPDATER_VERSION`, commits, creates an
+   annotated tag and pushes both.
+4. The **Release** workflow validates the tag, creates the GitHub release with
+   generated notes and attaches `dsh-update-all.sh` / `install.sh`.
+5. The [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap)
+   workflow picks up the new release on its daily schedule, or dispatch the
+   **Update formula** workflow manually for an immediate update.
 6. If the project URL changed, run `make set-repo OWNER=<owner>` so every
    placeholder is updated.
 

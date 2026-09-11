@@ -65,6 +65,16 @@ The installer downloads the updater script from `refs/heads/main`, so you always
 curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
 ```
 
+### Homebrew
+
+```bash
+brew tap haotian-lu-prog/tap
+brew install dsh-update-all
+```
+
+The formula tracks the latest GitHub release; the tap updates itself on a daily
+schedule, so `brew upgrade dsh-update-all` always has the newest updater.
+
 ### Manual
 
 ```bash
@@ -129,6 +139,7 @@ Restart any running `dsh web` / DSH session afterwards to load the new code.
 | `--list-backups` | List available backups. |
 | `--rollback [id]` | Restore a backup (latest by default). |
 | `--install` | Install this script into `~/.local/bin`. |
+| `--target-version` | Print the newest version that would be installed and exit (useful in scripts / CI). |
 | `-h`, `--help` | Show help. |
 | `-V`, `--version` | Show the updater version. |
 
@@ -207,6 +218,19 @@ PowerShell is not supported.
 **I don't have any profiles.**
 That is fine — the profile update step is simply skipped. The CLI and its
 bundled packages are still updated.
+
+## Releases and automation
+
+- Pushing a tag like `v0.1.1` triggers the **Release** workflow: it verifies the
+  tag against `UPDATER_VERSION`, creates the GitHub release with generated notes
+  and attaches `dsh-update-all.sh` and `install.sh`.
+- `make release VERSION=0.1.1` bumps `UPDATER_VERSION`, commits, tags and pushes
+  in one step. Add the `CHANGELOG.md` entry first.
+- The [homebrew-tap](https://github.com/haotian-lu-prog/homebrew-tap) checks the
+  latest release once a day and updates the formula automatically.
+- The **Upstream check** workflow runs daily, resolves the newest
+  `@deepseek-ai/dsh` version and opens an issue when DSH has moved ahead of the
+  version this repository last tracked.
 
 ## Contributing
 

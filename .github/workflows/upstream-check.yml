@@ -1,0 +1,88 @@
+name: Upstream check
+
+on:
+  schedule:
+    # every day at 09:00 UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    name: Check for a newer DSH release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve newest @deepseek-ai/dsh version
+        id: upstream
+        run: |
+          version="$(bash dsh-update-all.sh --target-version)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "newest @deepseek-ai/dsh: $version"
+
+      - name: Compare with tracked version
+        id: track
+        run: |
+          known="$(cat .github/last-known-dsh-version 2>/dev/null || true)"
+          echo "known=$known" >> "$GITHUB_OUTPUT"
+          if [ "$known" = "${{ steps.upstream.outputs.version }}" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open or update tracking issue
+        if: steps.track.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEW_VERSION: ${{ steps.upstream.outputs.version }}
+          KNOWN_VERSION: ${{ steps.track.outputs.known }}
+        run: |
+          gh label create upstream \
+            --color 1D76DB \
+            --description "New DeepSeek Harness release detected" \
+            --force
+          title="[Upstream] @deepseek-ai/dsh ${NEW_VERSION} is available"
+          existing="$(gh issue list --state open --label upstream \
+            --search "${NEW_VERSION} in:title" \
+            --json number --jq '.[0].number // empty')"
+          body="$(mktemp)"
+          {
+            echo "A newer DeepSeek Harness release was detected by the scheduled upstream check."
+            echo
+            echo "- Newest version: \`${NEW_VERSION}\`"
+            echo "- Previously tracked: \`${KNOWN_VERSION:-unknown}\`"
+            echo "- Detected at: \`$(date -u +%Y-%m-%dT%H:%M:%SZ)\`"
+            echo
+            echo "Checklist:"
+            echo "- [ ] Review the upstream changes"
+            echo "- [ ] Run \`dsh-update-all --dry-run\` against the new version"
+            echo "- [ ] Adjust the updater if DSH changed its CLI or profile layout"
+            echo "- [ ] Cut a new release when appropriate (\`make release VERSION=x.y.z\`)"
+          } > "$body"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$body"
+          else
+            gh issue create --title "$title" --body-file "$body" --label upstream
+          fi
+
+      - name: Record tracked version
+        if: steps.track.outputs.changed == 'true'
+        env:
+          NEW_VERSION: ${{ steps.upstream.outputs.version }}
+        run: |
+          printf '%s\n' "$NEW_VERSION" > .github/last-known-dsh-version
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/last-known-dsh-version
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "chore: track upstream dsh ${NEW_VERSION}"
+            git push
+          fi
