@@ -50,8 +50,7 @@ DSH 的更新通常分散在至少两个地方：
 shell 脚本。
 
 ![设置 → 通用设置里的「检查更新」](plugin/assets/screenshots/general-zh.webp)
-![设置 → 检查更新完整页面](plugin/assets/screenshots/settings-page-zh.webp)
-![测试更新提醒](plugin/assets/screenshots/test-reminder-zh.webp)
+![设置 → 检查更新完整页面&测试更新提醒](plugin/assets/screenshots/test-reminder-zh.webp)
 
 ```bash
 # 从 npm 安装
