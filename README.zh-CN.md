@@ -50,6 +50,7 @@ DSH 的更新通常分散在至少两个地方：
 shell 脚本。
 
 ![设置 → 通用设置里的「检查更新」](plugin/assets/screenshots/general-zh.webp)
+![右侧栏更新提醒](plugin/assets/screenshots/sidebar-cn.png)
 ![设置 → 检查更新完整页面&测试更新提醒](plugin/assets/screenshots/test-reminder-zh.webp)
 
 ```bash
