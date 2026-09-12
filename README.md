@@ -53,6 +53,7 @@ separately installed shell script required.
 
 ![Check for Updates... in DSH Settings → General](plugin/assets/screenshots/general-en.webp)
 ![Update reminder in the right sidebar](plugin/assets/screenshots/sidebar-en.png)
+![Check for Updates... in DSH Settings → plugin](plugin/assets/screenshots/plugin-en.png)
 
 ```bash
 # from npm
