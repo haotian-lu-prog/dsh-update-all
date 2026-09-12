@@ -52,7 +52,7 @@ with an update badge. The update logic is built in — no Homebrew and no
 separately installed shell script required.
 
 ![Check for Updates... in DSH Settings → General](plugin/assets/screenshots/general-en.webp)
-![Update reminder in the right sidebar](plugin/assets/screenshots/sidebar-en.webp)
+![Update reminder in the right sidebar](plugin/assets/screenshots/sidebar-en.png)
 
 ```bash
 # from npm
