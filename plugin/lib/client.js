@@ -112,8 +112,23 @@ window.__ModuleLoader__.load({
       testStop: "停止测试",
       testReminder: "测试提醒：发现可用更新（仅测试，不会真的更新）",
       testReminderMeta: "仅用于验证角标和提醒效果",
-      notificationTitle: "DSH 有可用更新",
-      notificationBody: "测试提醒：仅用于验证浏览器通知和角标（不会真的更新）",
+      testNotificationTitle: "DSH 有可用更新",
+      testNotificationBody: "测试提醒：仅用于验证浏览器通知和角标（不会真的更新）",
+      updateNotificationTitle: "DSH 有可用更新",
+      updateNotificationBody: "最新版本 {version}。打开 设置 → 通用设置 查看。",
+      notifications: "浏览器通知",
+      notificationHint: "有新版本时发送浏览器通知",
+      notificationGranted: "已允许",
+      notificationDefault: "未授权",
+      notificationDenied: "已拒绝",
+      notificationUnsupported: "当前环境不支持",
+      enableNotifications: "启用通知",
+      checkInterval: "自动检查",
+      checkIntervalHint: "启动时 / 每小时 / 每天，或关闭",
+      intervalStartup: "启动时",
+      intervalHourly: "每小时",
+      intervalDaily: "每天",
+      intervalOff: "关闭",
     };
 
     var EN = {
@@ -171,8 +186,23 @@ window.__ModuleLoader__.load({
       testStop: "Stop test",
       testReminder: "Test reminder: update available (test only, nothing is updated)",
       testReminderMeta: "Only used to verify the badge and reminder UI",
-      notificationTitle: "DSH update available",
-      notificationBody: "Test reminder: only verifying the browser notification and badge (nothing is updated)",
+      testNotificationTitle: "DSH update available",
+      testNotificationBody: "Test reminder: only verifying the browser notification and badge (nothing is updated)",
+      updateNotificationTitle: "DSH update available",
+      updateNotificationBody: "Version {version} is available. Open Settings → General to review.",
+      notifications: "Browser notifications",
+      notificationHint: "Notify me when a new version is available",
+      notificationGranted: "Allowed",
+      notificationDefault: "Not allowed yet",
+      notificationDenied: "Denied",
+      notificationUnsupported: "Not supported in this environment",
+      enableNotifications: "Enable notifications",
+      checkInterval: "Automatic check",
+      checkIntervalHint: "On startup / hourly / daily, or off",
+      intervalStartup: "On startup",
+      intervalHourly: "Hourly",
+      intervalDaily: "Daily",
+      intervalOff: "Off",
     };
 
     function injectStyle() {
@@ -233,24 +263,59 @@ window.__ModuleLoader__.load({
       }).then(parseJson);
     }
 
-    function sendBrowserNotification(t) {
-      try {
-        if (typeof Notification === "undefined") return;
-        var show = function () {
-          try {
-            new Notification(t("notificationTitle"), { body: t("notificationBody") });
-          } catch (error) {}
-        };
-        if (Notification.permission === "granted") {
-          show();
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission()
-            .then(function (permission) {
-              if (permission === "granted") show();
-            })
-            .catch(function () {});
-        }
-      } catch (error) {}
+    function notificationsSupported() {
+      return typeof Notification !== "undefined";
+    }
+
+    function notificationPermission() {
+      if (notificationsSupported()) return Notification.permission;
+      return "unsupported";
+    }
+
+    function requestNotificationPermission() {
+      if (notificationsSupported()) {
+        return Notification.requestPermission().catch(function () {
+          return notificationPermission();
+        });
+      }
+      return Promise.resolve("unsupported");
+    }
+
+    function sendBrowserNotification(title, body) {
+      if (notificationsSupported()) {
+        try {
+          if (Notification.permission === "granted") {
+            var notice = new Notification(title, { body: body, tag: "dsh-update-plugin" });
+            notice.onclick = function () {
+              try {
+                window.focus();
+              } catch (error) {}
+            };
+            return true;
+          }
+        } catch (error) {}
+      }
+      return false;
+    }
+
+    function useNotificationPermission() {
+      var pair = React.useState(notificationPermission());
+      var permission = pair[0];
+      var setPermission = pair[1];
+      var request = React.useCallback(function () {
+        return requestNotificationPermission().then(function (next) {
+          setPermission(next);
+          return next;
+        });
+      }, [setPermission]);
+      return { permission: permission, request: request };
+    }
+
+    function notificationStatusText(t, permission) {
+      if (permission === "granted") return t("notificationGranted");
+      if (permission === "denied") return t("notificationDenied");
+      if (permission === "unsupported") return t("notificationUnsupported");
+      return t("notificationDefault");
     }
 
     function manualCommands(profileName) {
@@ -341,6 +406,69 @@ window.__ModuleLoader__.load({
     function applyTestReminder(data, test) {
       if (!test) return data;
       return Object.assign({}, data || {}, { updateAvailable: true, testReminder: true });
+    }
+
+    var NOTIFIED_KEY = "dsh-update-plugin:notified-version";
+    var autoCheckTimer = null;
+
+    function readNotifiedVersion() {
+      if (typeof window === "undefined" || typeof window.localStorage === "undefined") return null;
+      try {
+        return window.localStorage.getItem(NOTIFIED_KEY);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeNotifiedVersion(version) {
+      if (typeof window === "undefined" || typeof window.localStorage === "undefined") return;
+      try {
+        window.localStorage.setItem(NOTIFIED_KEY, version);
+      } catch (error) {}
+    }
+
+    function stopAutoCheck() {
+      if (autoCheckTimer) {
+        clearInterval(autoCheckTimer);
+        autoCheckTimer = null;
+      }
+    }
+
+    function autoCheckDelay(config) {
+      if (config && config.checkInterval === "hourly") return 60 * 60 * 1000;
+      if (config && config.checkInterval === "daily") return 24 * 60 * 60 * 1000;
+      return 0;
+    }
+
+    function checkUpdatesAndNotify(t) {
+      if (testReminder.active) return;
+      getStatus(true)
+        .then(function (data) {
+          if (data && data.updateAvailable && data.targetVersion) {
+            if (testReminder.active) return;
+            var last = readNotifiedVersion();
+            if (last === data.targetVersion) return;
+            var sent = sendBrowserNotification(
+              t("updateNotificationTitle"),
+              t("updateNotificationBody", { version: data.targetVersion }),
+            );
+            if (sent) writeNotifiedVersion(data.targetVersion);
+          }
+        })
+        .catch(function () {});
+    }
+
+    function startAutoCheck(config, t) {
+      stopAutoCheck();
+      var current = config || {};
+      if (current.checkInterval === "off") return;
+      checkUpdatesAndNotify(t);
+      var delay = autoCheckDelay(current);
+      if (delay > 0) {
+        autoCheckTimer = setInterval(function () {
+          checkUpdatesAndNotify(t);
+        }, delay);
+      }
     }
 
     function useUpdater(t) {
@@ -578,7 +706,8 @@ window.__ModuleLoader__.load({
       var test = useTestReminder();
       var configState = useConfig(t);
       var backupsState = useBackups(t);
-      var draftPair = React.useState({ channel: "auto", minAge: 0 });
+      var notification = useNotificationPermission();
+      var draftPair = React.useState({ channel: "auto", minAge: 0, checkInterval: "startup" });
       var draft = draftPair[0];
       var setDraft = draftPair[1];
 
@@ -588,6 +717,7 @@ window.__ModuleLoader__.load({
             setDraft({
               channel: configState.state.config.channel || "auto",
               minAge: Number.isInteger(configState.state.config.minAge) ? configState.state.config.minAge : 0,
+              checkInterval: configState.state.config.checkInterval || "startup",
             });
           }
         },
@@ -612,6 +742,9 @@ window.__ModuleLoader__.load({
         configState.save({
           channel: draft.channel,
           minAge: Number(draft.minAge) || 0,
+          checkInterval: draft.checkInterval || "startup",
+        }).then(function (next) {
+          if (next) startAutoCheck(next, t);
         });
       }
 
@@ -681,7 +814,11 @@ window.__ModuleLoader__.load({
                           return;
                         }
                         if (typeof props.openSidebar === "function") props.openSidebar();
-                        sendBrowserNotification(t);
+                        requestNotificationPermission().then(function (permission) {
+                          if (permission === "granted") {
+                            sendBrowserNotification(t("testNotificationTitle"), t("testNotificationBody"));
+                          }
+                        });
                         setTestReminder(true, 10000);
                       },
                     },
@@ -727,7 +864,7 @@ window.__ModuleLoader__.load({
                     className: "dsu-select",
                     value: draft.channel,
                     onChange: function (event) {
-                      setDraft({ channel: event.target.value, minAge: draft.minAge });
+                      setDraft({ channel: event.target.value, minAge: draft.minAge, checkInterval: draft.checkInterval });
                     },
                   },
                   [
@@ -756,10 +893,64 @@ window.__ModuleLoader__.load({
                     step: 60,
                     value: draft.minAge,
                     onChange: function (event) {
-                      setDraft({ channel: draft.channel, minAge: Math.max(0, Number(event.target.value) || 0) });
+                      setDraft({ channel: draft.channel, minAge: Math.max(0, Number(event.target.value) || 0), checkInterval: draft.checkInterval });
                     },
                   }),
                   h("span", { className: "dsu-desc", key: "unit" }, t("minAgeUnit")),
+                ]),
+              ],
+            ),
+            h(
+              "div",
+              { className: "dsu-field", key: "check-interval" },
+              [
+                h("div", { className: "dsu-field-label", key: "label" }, [
+                  h("div", { className: "dsu-title", key: "t" }, t("checkInterval")),
+                  h("div", { className: "dsu-desc", key: "d" }, t("checkIntervalHint")),
+                ]),
+                h(
+                  "select",
+                  {
+                    key: "select",
+                    className: "dsu-select",
+                    value: draft.checkInterval,
+                    onChange: function (event) {
+                      setDraft({ channel: draft.channel, minAge: draft.minAge, checkInterval: event.target.value });
+                    },
+                  },
+                  [
+                    h("option", { key: "startup", value: "startup" }, t("intervalStartup")),
+                    h("option", { key: "hourly", value: "hourly" }, t("intervalHourly")),
+                    h("option", { key: "daily", value: "daily" }, t("intervalDaily")),
+                    h("option", { key: "off", value: "off" }, t("intervalOff")),
+                  ],
+                ),
+              ],
+            ),
+            h(
+              "div",
+              { className: "dsu-field", key: "notifications" },
+              [
+                h("div", { className: "dsu-field-label", key: "label" }, [
+                  h("div", { className: "dsu-title", key: "t" }, t("notifications")),
+                  h("div", { className: "dsu-desc", key: "d" }, t("notificationHint")),
+                ]),
+                h("div", { className: "dsu-control", key: "control" }, [
+                  h("span", { className: "dsu-desc", key: "status" }, notificationStatusText(t, notification.permission)),
+                  notification.permission === "granted" || notification.permission === "unsupported"
+                    ? null
+                    : h(
+                        "button",
+                        {
+                          key: "enable",
+                          type: "button",
+                          className: "dsu-btn",
+                          onClick: function () {
+                            notification.request();
+                          },
+                        },
+                        t("enableNotifications"),
+                      ),
                 ]),
               ],
             ),
@@ -961,6 +1152,33 @@ window.__ModuleLoader__.load({
           return ctx.locale.register(NS, { zh: ZH, en: EN });
         },
         "dsh-update-plugin: dictionaries",
+      );
+
+      var autoCheckDisposed = false;
+      ctx.effect(
+        function () {
+          var translate = function (key, params) {
+            return ctx.locale.bind(NS)(key, params);
+          };
+          getConfig()
+            .then(function (config) {
+              if (autoCheckDisposed) return;
+              if (config && config.checkInterval) {
+                startAutoCheck(config, translate);
+              } else {
+                startAutoCheck({ checkInterval: "startup" }, translate);
+              }
+            })
+            .catch(function () {
+              if (autoCheckDisposed) return;
+              startAutoCheck({ checkInterval: "startup" }, translate);
+            });
+          return function () {
+            autoCheckDisposed = true;
+            stopAutoCheck();
+          };
+        },
+        "dsh-update-plugin: automatic update check",
       );
 
       var sidebarRight = null;

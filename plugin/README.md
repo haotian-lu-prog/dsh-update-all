@@ -59,6 +59,10 @@ Then restart DSH Web, open **Settings → General**, and look for the
   sends a browser notification (permission required), and shows the update badge
   for 10 seconds so you can verify the reminder without a real release.
 - The row shows the current and newest versions plus the number of profiles.
+- **Automatic update checks** can run on startup, hourly or daily, or be turned
+  off; pick the interval in the settings page.
+- When a real update is available and browser notifications are allowed, the
+  plugin sends a notification once per new version.
 - **Check for updates** refreshes the status (it also refreshes after
   reconnecting).
 - **Update now** updates the CLI and then every profile with dependencies.

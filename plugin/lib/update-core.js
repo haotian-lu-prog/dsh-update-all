@@ -20,8 +20,9 @@ export const CLI_TIMEOUT_MS = 10 * 60 * 1000;
 export const PROFILE_TIMEOUT_MS = 5 * 60 * 1000;
 
 export const CONFIG_FILENAME = "dsh-update-plugin.json";
-export const DEFAULT_CONFIG = { channel: "auto", minAge: 0 };
+export const DEFAULT_CONFIG = { channel: "auto", minAge: 0, checkInterval: "startup" };
 const CHANNELS = new Set(["auto", "stable", "next", "alpha"]);
+const CHECK_INTERVALS = new Set(["startup", "hourly", "daily", "off"]);
 
 export function normalizeConfig(raw) {
   const source = raw && typeof raw === "object" ? raw : {};
@@ -29,6 +30,11 @@ export function normalizeConfig(raw) {
   if (!CHANNELS.has(config.channel)) config.channel = DEFAULT_CONFIG.channel;
   const minAge = Number(config.minAge);
   config.minAge = Number.isInteger(minAge) && minAge >= 0 ? minAge : DEFAULT_CONFIG.minAge;
+  if (CHECK_INTERVALS.has(config.checkInterval)) {
+    // keep
+  } else {
+    config.checkInterval = DEFAULT_CONFIG.checkInterval;
+  }
   return config;
 }
 

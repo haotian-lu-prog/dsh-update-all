@@ -196,13 +196,13 @@ test("runUpdate updates the CLI and every profile with mocked commands", async (
 
 test("config round-trips through the DSH home", async () => {
   const home = await mkdtemp(join(tmpdir(), "dsh-update-config-"));
-  assert.deepEqual(await readConfig(home), { channel: "auto", minAge: 0 });
+  assert.deepEqual(await readConfig(home), { channel: "auto", minAge: 0, checkInterval: "startup" });
 
-  const saved = await writeConfig(home, { channel: "next", minAge: 1440 });
-  assert.deepEqual(saved, { channel: "next", minAge: 1440 });
-  assert.deepEqual(await readConfig(home), { channel: "next", minAge: 1440 });
+  const saved = await writeConfig(home, { channel: "next", minAge: 1440, checkInterval: "daily" });
+  assert.deepEqual(saved, { channel: "next", minAge: 1440, checkInterval: "daily" });
+  assert.deepEqual(await readConfig(home), { channel: "next", minAge: 1440, checkInterval: "daily" });
 
-  assert.deepEqual(await writeConfig(home, { channel: "bogus", minAge: -5 }), { channel: "auto", minAge: 0 });
+  assert.deepEqual(await writeConfig(home, { channel: "bogus", minAge: -5, checkInterval: "bogus" }), { channel: "auto", minAge: 0, checkInterval: "startup" });
 });
 
 test("fetchTargetVersion honours the configured channel", async () => {

@@ -6,12 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-13
+
 ### Added
 
-- **Send test reminder / 测试更新提醒** button in the settings page: opens the
-  sidebar tab, sends a browser notification (permission required) and shows the
-  update badge for 10 seconds, so the reminder can be verified without a real
-  release.
+- Automatic update checks: on startup, hourly, daily or off, persisted in the
+  plugin config and restarted when the setting is saved.
+- Browser notification when a real update is available: sent once per target
+  version, with a notification-permission row and an enable button in the
+  settings page.
+- The **Send test reminder / 测试更新提醒** button now requests notification
+  permission and uses its own test copy, so it can be told apart from real
+  notifications.
 
 ## [0.1.0] - 2026-09-12
 

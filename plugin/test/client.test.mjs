@@ -91,10 +91,13 @@ test("client bundle registers the General row, settings page and sidebar card", 
     },
   };
 
-  exports.apply(ctx);
+  const oldFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ channel: "auto", minAge: 0, checkInterval: "off" }) });
+  try {
+    exports.apply(ctx);
 
-  assert.deepEqual(slotNames.sort(), ["settings.general.item", "settings.section"]);
-  assert.equal(effects.length, 5);
+    assert.deepEqual(slotNames.sort(), ["settings.general.item", "settings.section"]);
+    assert.equal(effects.length, 6);
   assert.equal(tabTypes.length, 1);
   assert.equal(tabTypes[0].id, "dsh-update-plugin");
   assert.equal(tabTypes[0].kind, "dsh-update-plugin");
@@ -118,18 +121,21 @@ test("client bundle registers the General row, settings page and sidebar card", 
   injected.openSidebar();
   assert.deepEqual(openTabs, ["dsh-update-plugin"]);
 
-  const rendered = general.component({ t: (key) => key, showSidebar: () => false });
-  assert.equal(rendered.type, "element");
+    const rendered = general.component({ t: (key) => key, showSidebar: () => false });
+    assert.equal(rendered.type, "element");
 
-  const section = registrations.find((entry) => entry.options.name === "settings.section");
-  const sectionRendered = section.component({ t: (key) => key });
-  assert.equal(sectionRendered.type, "element");
+    const section = registrations.find((entry) => entry.options.name === "settings.section");
+    const sectionRendered = section.component({ t: (key) => key });
+    assert.equal(sectionRendered.type, "element");
 
-  const body = registrations.find((entry) => entry.options.name === "sidebar.right.pane.tab");
-  const bodyRendered = body.component({ t: (key) => key });
-  assert.equal(bodyRendered.type, "element");
+    const body = registrations.find((entry) => entry.options.name === "sidebar.right.pane.tab");
+    const bodyRendered = body.component({ t: (key) => key });
+    assert.equal(bodyRendered.type, "element");
 
-  const title = registrations.find((entry) => entry.options.name === "sidebar.right.pane.tab.title");
-  const titleRendered = title.component();
-  assert.equal(titleRendered.type, "element");
+    const title = registrations.find((entry) => entry.options.name === "sidebar.right.pane.tab.title");
+    const titleRendered = title.component();
+    assert.equal(titleRendered.type, "element");
+  } finally {
+    globalThis.fetch = oldFetch;
+  }
 });

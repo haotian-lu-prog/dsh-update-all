@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   same-origin requests.
 - Plugin screenshots in the English and Chinese READMEs.
 - Published `dsh-update-plugin@0.1.0` to npm: `dsh plugin --profile web add dsh-update-plugin`.
+- `dsh-update-plugin` 0.2.0: automatic update checks (startup / hourly /
+  daily / off) and browser notifications for real updates.
 - A **Send test reminder / 测试更新提醒** button in the plugin settings page:
   opens the sidebar tab, sends a browser notification and shows the update
   badge for 10 seconds, so the reminder can be verified without a real release.

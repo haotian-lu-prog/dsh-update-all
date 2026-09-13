@@ -54,6 +54,8 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-rel
 - 状态卡片里有 **测试更新提醒** 按钮：会打开侧边栏 tab、发送浏览器通知
   （需要授权），并显示 10 秒的更新角标，方便验证提醒效果，不用等真实新版本。
 - 行内显示当前版本、最新版本和 profile 数量。
+- **自动检查**支持启动时 / 每小时 / 每天，也可以关闭；在设置页选择即可。
+- 发现真实新版本且浏览器通知已授权时，每个新版本只通知一次。
 - **检查更新**：刷新状态。
 - **立即更新**：先更新 CLI，再更新每个有依赖的 profile；更新前会自动把
   `package.json` / `pnpm-lock.yaml` 备份到 `~/.dsh/update-backups/`。
