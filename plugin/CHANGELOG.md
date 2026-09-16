@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-16
+
+Published to npm as `dsh-update-plugin@0.3.0`. This is the first release that
+actually ships the automatic-check and browser-notification work listed under
+`0.2.0` below — `0.2.0` itself was never published.
+
+### Added
+
+- Automatic update checks: on startup, hourly, daily or off, persisted in the
+  plugin config and restarted when the setting is saved.
+- Browser notification when a real update is available: sent once per target
+  version, with a notification-permission row and an enable button in the
+  settings page.
+- The **Send test reminder / 测试更新提醒** button now requests notification
+  permission and uses its own test copy, so it can be told apart from real
+  notifications.
+
 ### Fixed
 
 - Screenshot references in `README.md` and `README.zh-CN.md`: three links pointed
@@ -13,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   duplicate `plugin-zh.png` (byte-identical to `plugin-cn.png`) is gone.
 
 ## [0.2.0] - 2026-09-13
+
+Not published to npm; its changes shipped in `0.3.0`.
 
 ### Added
 

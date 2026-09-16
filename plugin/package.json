@@ -1,6 +1,6 @@
 {
   "name": "dsh-update-plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "DSH Web plugin: check and update DeepSeek Harness CLI and all profile plugins from Settings → General.",
   "license": "MIT",
   "repository": {
