@@ -17,8 +17,8 @@
 `dsh-update-all` 脚本**。
 
 ![设置 → 通用设置里的「检查更新」](assets/screenshots/general-zh.webp)
-![设置 → 检查更新完整页面](assets/screenshots/settings-page-zh.webp)
-![测试更新提醒](assets/screenshots/test-reminder-zh.webp)
+![右侧栏更新提醒](assets/screenshots/sidebar-cn.png)
+![设置 → 检查更新完整页面](assets/screenshots/plugin-cn.png)
 
 ## 安装
 

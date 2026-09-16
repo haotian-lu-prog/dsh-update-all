@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Screenshot references in `README.md` and `README.zh-CN.md`: three links pointed
+  at files that do not exist. They now use the current captures, and the
+  duplicate `plugin-zh.png` (byte-identical to `plugin-cn.png`) is gone.
+
 ## [0.2.0] - 2026-09-13
 
 ### Added

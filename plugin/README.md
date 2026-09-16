@@ -18,7 +18,8 @@ The update logic is built into the plugin. It does **not** require Homebrew or a
 separately installed `dsh-update-all` script.
 
 ![Check for Updates... in Settings → General](assets/screenshots/general-en.webp)
-![Update reminder in the right sidebar](assets/screenshots/sidebar-en.webp)
+![Update reminder in the right sidebar](assets/screenshots/sidebar-en.png)
+![Check for Updates... page in Settings](assets/screenshots/plugin-en.png)
 
 ## Install
 
