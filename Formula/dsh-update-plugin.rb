@@ -1,8 +1,8 @@
 class DshUpdatePlugin < Formula
   desc "One-command updater for DeepSeek Harness (DSH) CLI and profile plugins"
   homepage "https://github.com/haotian-lu-prog/dsh-update-plugin"
-  url "https://github.com/haotian-lu-prog/dsh-update-plugin/archive/refs/tags/v0.1.2.tar.gz"
-  sha256 "e144d1622ecceb41bb8b5e5b86e21d386c6aaf9a3cb6b058effc05f2abec3e2c"
+  url "https://github.com/haotian-lu-prog/dsh-update-plugin/archive/refs/tags/v0.2.0.tar.gz"
+  sha256 "c984da201bbf35c09c7202e11e56e3bf5e17e1eddb0e6aa6304d966225b0d6c8"
   license "MIT"
   head "https://github.com/haotian-lu-prog/dsh-update-plugin.git", branch: "main"
 
