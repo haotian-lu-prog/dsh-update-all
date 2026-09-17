@@ -35,19 +35,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Document the `brew trust` step required by Homebrew 6+ before installing
   formulae from a third-party tap.
 
+## [0.2.0] - 2026-09-17
+
+### Changed
+
+- **Renamed the project, repository and CLI from `dsh-update-all` to
+  `dsh-update-plugin`.** The old name is retired everywhere: the script is now
+  `dsh-update-plugin.sh`, the installed command is `dsh-update-plugin`, the
+  formula is `Formula/dsh-update-plugin.rb` (tap
+  `haotian-lu-prog/dsh-update-plugin`) and the npm metadata points at the new
+  repository.
+- **Breaking for existing CLI installs.** The installer variables
+  `DSH_UPDATE_ALL_REPO` / `DSH_UPDATE_ALL_REF` are now
+  `DSH_UPDATE_PLUGIN_REPO` / `DSH_UPDATE_PLUGIN_REF`, and the installed binary is
+  renamed. Reinstall once with `install.sh` or Homebrew; GitHub keeps the old
+  repository URLs redirecting to the new name.
+- Refreshed the English plugin screenshots for `dsh-update-plugin@0.3.0`:
+  Settings → General, the Settings → Check for Updates... page and the right
+  sidebar tab.
+
+### Fixed
+
+- `docs/announcement.md` linked to screenshot files that do not exist
+  (`settings-page-zh.webp`, `test-reminder-zh.webp`, `sidebar-en.webp`).
+
 ## [0.1.2] - 2026-09-11
 
 ### Changed
 
 - The Homebrew formula now lives in this repository
-  (`Formula/dsh-update-all.rb`); the separate `homebrew-tap` repository is no
+  (`Formula/dsh-update-plugin.rb`); the separate `homebrew-tap` repository is no
   longer needed.
 - The **Release** workflow updates the formula URL and sha256 immediately after
   publishing the GitHub release, so Homebrew always tracks the newest version
   without any extra secret.
 - Homebrew install command is now
-  `brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all`
-  followed by `brew install dsh-update-all`.
+  `brew tap haotian-lu-prog/dsh-update-plugin https://github.com/haotian-lu-prog/dsh-update-plugin`
+  followed by `brew install dsh-update-plugin`.
 
 ### Removed
 
@@ -67,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   tracked version.
 - Tag-driven **Release** workflow: validates the tag against
   `UPDATER_VERSION`, creates the GitHub release with generated notes and
-  attaches `dsh-update-all.sh` / `install.sh`.
+  attaches `dsh-update-plugin.sh` / `install.sh`.
 - `scripts/release.sh` and `make release VERSION=x.y.z` for one-command
   releases.
 - Optional `HOMEBREW_TAP_TOKEN` secret to trigger the tap update immediately
@@ -95,7 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - English and Chinese README.
 - Mock-based test suite and GitHub Actions CI.
 
-[Unreleased]: https://github.com/haotian-lu-prog/dsh-update-all/compare/v0.1.2...HEAD
-[0.1.2]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.2
-[0.1.1]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.1
-[0.1.0]: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/v0.1.0
+[Unreleased]: https://github.com/haotian-lu-prog/dsh-update-plugin/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/v0.2.0
+[0.1.2]: https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/v0.1.2
+[0.1.1]: https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/v0.1.1
+[0.1.0]: https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/v0.1.0

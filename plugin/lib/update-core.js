@@ -1,7 +1,7 @@
 // dsh-update-plugin host-side update core.
 //
 // This module intentionally depends on Node built-ins only. It mirrors the
-// logic of the dsh-update-all shell script (resolve the newest CLI across all
+// logic of the dsh-update-plugin shell script (resolve the newest CLI across all
 // npm dist-tags, discover profiles, back up, update the CLI and every profile)
 // so the plugin can work without Homebrew or a separately installed script.
 
@@ -392,7 +392,7 @@ export async function listBackups(dshHome) {
     backups.push({
       id: entry.name,
       dir,
-      source: manifest.source || "dsh-update-all",
+      source: manifest.source || "dsh-update-plugin",
       createdAt: manifest.createdAt || manifest.timestamp || null,
       cliVersion: manifest.cliVersion || manifest.cli_version || null,
       targetVersion: manifest.targetVersion || manifest.target_version || null,

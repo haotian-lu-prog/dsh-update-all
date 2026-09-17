@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for taking the time to improve `dsh-update-all`!
+Thanks for taking the time to improve `dsh-update-plugin`!
 
 ## Ways to help
 
@@ -13,8 +13,8 @@ Thanks for taking the time to improve `dsh-update-all`!
 ## Development setup
 
 ```bash
-git clone https://github.com/haotian-lu-prog/dsh-update-all.git
-cd dsh-update-all
+git clone https://github.com/haotian-lu-prog/dsh-update-plugin.git
+cd dsh-update-plugin
 
 # run the test suite (uses mocks, never touches your real DSH)
 bash tests/run-tests.sh
@@ -45,7 +45,7 @@ for development beyond `bash` and `node`.
 Run the shell updater tests and the DSH plugin tests:
 
 ```bash
-make test          # dsh-update-all shell tests
+make test          # dsh-update-plugin shell tests
 make plugin-test   # plugin/ Node test suite
 ```
 
@@ -68,8 +68,8 @@ that were executed. It covers:
    This runs the test suite, bumps `UPDATER_VERSION`, commits, creates an
    annotated tag and pushes both.
 4. The **Release** workflow validates the tag, creates the GitHub release with
-   generated notes and attaches `dsh-update-all.sh` / `install.sh`.
-5. The same **Release** workflow updates `Formula/dsh-update-all.rb`
+   generated notes and attaches `dsh-update-plugin.sh` / `install.sh`.
+5. The same **Release** workflow updates `Formula/dsh-update-plugin.rb`
    (URL + sha256) on `main`, so Homebrew points at the new version immediately.
 6. If the project URL changed, run `make set-repo OWNER=<owner>` so every
    placeholder — including the formula's `homepage` and `url` — is updated.

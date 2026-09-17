@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Release helper for dsh-update-all.
+# Release helper for dsh-update-plugin.
 #
 # Usage:
 #   scripts/release.sh <version>          # e.g. scripts/release.sh 0.2.0
@@ -48,11 +48,11 @@ printf '==> running tests\n'
 bash tests/run-tests.sh
 
 printf '==> syntax checks\n'
-bash -n dsh-update-all.sh
+bash -n dsh-update-plugin.sh
 bash -n install.sh
 bash -n tests/run-tests.sh
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck dsh-update-all.sh install.sh tests/run-tests.sh
+  shellcheck dsh-update-plugin.sh install.sh tests/run-tests.sh
 else
   printf 'shellcheck not installed, skipping\n'
 fi
@@ -63,7 +63,7 @@ import re
 import sys
 
 version = sys.argv[1]
-path = "dsh-update-all.sh"
+path = "dsh-update-plugin.sh"
 src = open(path).read()
 new, count = re.subn(
     r'^UPDATER_VERSION="[^"]+"',
@@ -73,11 +73,11 @@ new, count = re.subn(
     flags=re.M,
 )
 if count != 1:
-    raise SystemExit("could not find UPDATER_VERSION in dsh-update-all.sh")
+    raise SystemExit("could not find UPDATER_VERSION in dsh-update-plugin.sh")
 open(path, "w").write(new)
 PY
 
-git add dsh-update-all.sh CHANGELOG.md
+git add dsh-update-plugin.sh CHANGELOG.md
 git commit -m "release: v${VERSION}"
 git tag -a "v${VERSION}" -m "v${VERSION}"
 
@@ -88,5 +88,5 @@ git push origin "v${VERSION}"
 printf '\nreleased v%s\n' "$VERSION"
 printf 'GitHub Actions will now:\n'
 printf '  - run CI and the release version check\n'
-printf '  - create the GitHub release and attach dsh-update-all.sh / install.sh\n'
-printf '  - update Formula/dsh-update-all.rb so Homebrew tracks the new version immediately\n'
+printf '  - create the GitHub release and attach dsh-update-plugin.sh / install.sh\n'
+printf '  - update Formula/dsh-update-plugin.rb so Homebrew tracks the new version immediately\n'

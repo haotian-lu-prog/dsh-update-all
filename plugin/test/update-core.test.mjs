@@ -254,5 +254,5 @@ test("listBackups normalizes plugin and shell manifests", async () => {
   const shell = backups.find((backup) => backup.id === "20260102T000000");
   assert.deepEqual(shell.profiles, ["web", "headless"]);
   assert.equal(shell.cliVersion, "0.1.5-rc.2");
-  assert.equal(shell.source, "dsh-update-all");
+  assert.equal(shell.source, "dsh-update-plugin");
 });

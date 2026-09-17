@@ -1,6 +1,6 @@
-# dsh-update-all
+# dsh-update-plugin
 
-[![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
+[![CI](https://github.com/haotian-lu-prog/dsh-update-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-plugin/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
 [![Topic: dsh-plugin](https://img.shields.io/badge/topic-dsh--plugin-0f766e)](https://github.com/topics/dsh-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -9,6 +9,18 @@ Update **DeepSeek Harness (DSH)**, its bundled `@deepseek-ai/dsh-*` packages and
 **all profile plugins** with one command.
 
 [中文说明](README.zh-CN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+
+> **Renamed from `dsh-update-all`.** The project uses one name everywhere now —
+> repository, CLI command, Homebrew formula and npm package. If you installed
+> the CLI before v0.2.0, reinstall it once to get the renamed command; GitHub
+> keeps redirecting the old repository URLs.
+
+This repository ships two artifacts under that one name:
+
+| Artifact | Install | What it does |
+| --- | --- | --- |
+| **CLI** (`dsh-update-plugin`) | `brew install dsh-update-plugin`, or `install.sh` | one command that updates the DSH CLI, its bundled packages and every profile plugin |
+| **DSH Web plugin** (npm `dsh-update-plugin`) | `dsh plugin --profile web add dsh-update-plugin` | adds **Check for Updates...** to Settings and the right sidebar |
 
 ---
 
@@ -28,7 +40,7 @@ that npm's `latest` dist-tag is not always the newest DSH release.
 
 ## Features
 
-- **One command**: `dsh-update-all`.
+- **One command**: `dsh-update-plugin`.
 - **CLI + plugins**: updates the global CLI and every profile's plugins.
 - **Always actually latest**: compares *all* npm dist-tags (`latest`, `next`,
   `alpha`, …) instead of trusting `latest`.
@@ -60,7 +72,7 @@ separately installed shell script required.
 dsh plugin --profile web add dsh-update-plugin
 
 # from a local checkout (development)
-dsh plugin --profile web add /path/to/dsh-update-all/plugin
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin
 ```
 
 See [`plugin/`](plugin/) for installation, compatibility, fallbacks and
@@ -86,43 +98,43 @@ joins `dsh.profile.bundles`.
 ### One-liner
 
 ```bash
-curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-plugin/releases/latest/download/install.sh | bash
 ```
 
 The installer downloads the updater script from `refs/heads/main`, so you always get the newest code. To run the installer itself from the main branch instead of the latest release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/install.sh | bash
 ```
 
 ### Homebrew
 
 ```bash
-brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
-brew trust haotian-lu-prog/dsh-update-all
-brew install dsh-update-all
+brew tap haotian-lu-prog/dsh-update-plugin https://github.com/haotian-lu-prog/dsh-update-plugin
+brew trust haotian-lu-prog/dsh-update-plugin
+brew install dsh-update-plugin
 ```
 
 Homebrew 6+ requires third-party taps to be trusted explicitly; the
 `brew trust` line is a one-time step. On older Homebrew versions without the
 `trust` command, skip that line.
 
-The formula lives in this repository (`Formula/dsh-update-all.rb`). Every release
-updates its `url` and `sha256` automatically, so `brew upgrade dsh-update-all`
+The formula lives in this repository (`Formula/dsh-update-plugin.rb`). Every release
+updates its `url` and `sha256` automatically, so `brew upgrade dsh-update-plugin`
 always has the newest updater. No extra tap repository is required.
 
 ### Manual
 
 ```bash
-git clone https://github.com/haotian-lu-prog/dsh-update-all.git
-cd dsh-update-all
-./install.sh --local dsh-update-all.sh
+git clone https://github.com/haotian-lu-prog/dsh-update-plugin.git
+cd dsh-update-plugin
+./install.sh --local dsh-update-plugin.sh
 ```
 
 ### From a local checkout (without installing)
 
 ```bash
-bash ./dsh-update-all.sh --dry-run
+bash ./dsh-update-plugin.sh --dry-run
 ```
 
 If `~/.local/bin` is not in your `PATH`, the installer prints the line to add.
@@ -131,31 +143,31 @@ If `~/.local/bin` is not in your `PATH`, the installer prints the line to add.
 
 ```bash
 # Update everything to the newest release (default)
-dsh-update-all
+dsh-update-plugin
 
 # Preview only
-dsh-update-all --dry-run
+dsh-update-plugin --dry-run
 
 # Follow the stable dist-tag only
-dsh-update-all --channel stable
+dsh-update-plugin --channel stable
 
 # Be conservative: only accept packages published at least 24h ago
-dsh-update-all --min-age 1440
+dsh-update-plugin --min-age 1440
 
 # Only one profile
-dsh-update-all --profile web
+dsh-update-plugin --profile web
 
 # CLI only / plugins only
-dsh-update-all --no-plugins
-dsh-update-all --no-cli
+dsh-update-plugin --no-plugins
+dsh-update-plugin --no-cli
 
 # No confirmation prompt (for scripts / cron)
-dsh-update-all --yes
+dsh-update-plugin --yes
 
 # List backups and roll back
-dsh-update-all --list-backups
-dsh-update-all --rollback
-dsh-update-all --rollback 20260911T211500
+dsh-update-plugin --list-backups
+dsh-update-plugin --rollback
+dsh-update-plugin --rollback 20260911T211500
 ```
 
 Restart any running `dsh web` / DSH session afterwards to load the new code.
@@ -212,19 +224,19 @@ Restart any running `dsh web` / DSH session afterwards to load the new code.
 
 ## Safety and rollback
 
-- Always preview first: `dsh-update-all --dry-run`.
+- Always preview first: `dsh-update-plugin --dry-run`.
 - Every real run creates a backup by default. Backups live in
   `~/.dsh/update-backups/`.
 - To roll back everything — profile manifests, lockfiles, reinstall of
   dependencies and the previous CLI version:
 
   ```bash
-  dsh-update-all --rollback
+  dsh-update-plugin --rollback
   ```
 
 - By default the script passes `--config.minimum-release-age=0` to pnpm, so
   plugin updates are not held back by the 24h supply-chain delay. Use
-  `dsh-update-all --min-age 1440` (or `DSH_UPDATE_MIN_AGE=1440`) if you prefer
+  `dsh-update-plugin --min-age 1440` (or `DSH_UPDATE_MIN_AGE=1440`) if you prefer
   the safer behaviour.
 - This tool only ever writes inside your DSH home and your global npm/pnpm
   prefix. It never sends your data anywhere; npm/pnpm talk to their registries.
@@ -233,9 +245,9 @@ Restart any running `dsh web` / DSH session afterwards to load the new code.
 
 **Homebrew says the tap is untrusted. What do I do?**
 Homebrew 6+ does not load formulae from third-party taps until you trust them.
-Run `brew trust haotian-lu-prog/dsh-update-all` (or
-`brew trust --formula haotian-lu-prog/dsh-update-all/dsh-update-all`) once, then
-run `brew install dsh-update-all` again.
+Run `brew trust haotian-lu-prog/dsh-update-plugin` (or
+`brew trust --formula haotian-lu-prog/dsh-update-plugin/dsh-update-plugin`) once, then
+run `brew install dsh-update-plugin` again.
 
 **Why is `latest` not the newest version?**
 DSH is still releasing prereleases. At the time of writing,
@@ -265,10 +277,10 @@ bundled packages are still updated.
 
 - Pushing a tag like `v0.1.1` triggers the **Release** workflow: it verifies the
   tag against `UPDATER_VERSION`, creates the GitHub release with generated notes
-  and attaches `dsh-update-all.sh` and `install.sh`.
+  and attaches `dsh-update-plugin.sh` and `install.sh`.
 - `make release VERSION=0.1.1` bumps `UPDATER_VERSION`, commits, tags and pushes
   in one step. Add the `CHANGELOG.md` entry first.
-- The same workflow also updates `Formula/dsh-update-all.rb` in this
+- The same workflow also updates `Formula/dsh-update-plugin.rb` in this
   repository, so Homebrew points at the new version immediately after a release
   — no secret and no second repository required.
 - The **Upstream check** workflow runs daily, resolves the newest

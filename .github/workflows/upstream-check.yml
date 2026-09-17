@@ -21,7 +21,7 @@ jobs:
       - name: Resolve newest @deepseek-ai/dsh version
         id: upstream
         run: |
-          version="$(bash dsh-update-all.sh --target-version)"
+          version="$(bash dsh-update-plugin.sh --target-version)"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "newest @deepseek-ai/dsh: $version"
 
@@ -61,7 +61,7 @@ jobs:
             echo
             echo "Checklist:"
             echo "- [ ] Review the upstream changes"
-            echo "- [ ] Run \`dsh-update-all --dry-run\` against the new version"
+            echo "- [ ] Run \`dsh-update-plugin --dry-run\` against the new version"
             echo "- [ ] Adjust the updater if DSH changed its CLI or profile layout"
             echo "- [ ] Cut a new release when appropriate (\`make release VERSION=x.y.z\`)"
           } > "$body"

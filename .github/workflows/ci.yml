@@ -31,13 +31,13 @@ jobs:
 
       - name: Bash syntax check
         run: |
-          bash -n dsh-update-all.sh
+          bash -n dsh-update-plugin.sh
           bash -n install.sh
           bash -n tests/run-tests.sh
           bash -n scripts/release.sh
 
       - name: Homebrew formula syntax check
-        run: ruby -c Formula/dsh-update-all.rb
+        run: ruby -c Formula/dsh-update-plugin.rb
 
       - name: Plugin checks
         run: |
@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          shellcheck dsh-update-all.sh install.sh tests/run-tests.sh
+          shellcheck dsh-update-plugin.sh install.sh tests/run-tests.sh
 
   release-check:
     name: Release check (tagged builds)
@@ -70,7 +70,7 @@ jobs:
       - name: Verify tag matches script version
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          script_version="$(bash dsh-update-all.sh --version | awk '{print $2}')"
+          script_version="$(bash dsh-update-plugin.sh --version | awk '{print $2}')"
           if [ "$tag" != "$script_version" ]; then
             echo "tag v${tag} does not match UPDATER_VERSION ${script_version}" >&2
             exit 1

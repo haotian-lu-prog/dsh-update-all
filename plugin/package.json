@@ -5,12 +5,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/haotian-lu-prog/dsh-update-all.git",
+    "url": "git+https://github.com/haotian-lu-prog/dsh-update-plugin.git",
     "directory": "plugin"
   },
-  "homepage": "https://github.com/haotian-lu-prog/dsh-update-all/tree/main/plugin",
+  "homepage": "https://github.com/haotian-lu-prog/dsh-update-plugin/tree/main/plugin",
   "bugs": {
-    "url": "https://github.com/haotian-lu-prog/dsh-update-all/issues"
+    "url": "https://github.com/haotian-lu-prog/dsh-update-plugin/issues"
   },
   "type": "module",
   "main": "lib/index.js",

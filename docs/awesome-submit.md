@@ -2,8 +2,8 @@
 
 Status: **prepared, waiting for the repository age gate.**
 
-- Repository: https://github.com/haotian-lu-prog/dsh-update-all
-- Plugin entry URL: https://github.com/haotian-lu-prog/dsh-update-all/tree/main/plugin
+- Repository: https://github.com/haotian-lu-prog/dsh-update-plugin
+- Plugin entry URL: https://github.com/haotian-lu-prog/dsh-update-plugin/tree/main/plugin
 - npm package: https://www.npmjs.com/package/dsh-update-plugin
 - Topic `dsh-plugin`: already added to the repository
 - Repository created at: `2026-09-11T13:01:27Z`
@@ -33,8 +33,8 @@ cd /tmp/awesome-dsh
 git checkout -b add-dsh-update-plugin
 
 # 3. Copy the prepared entry, one file per plugin
-cp "/Users/lu.haotian/Library/Mobile Documents/com~apple~CloudDocs/Ai/DSH/dsh-update-all/docs/awesome-dsh-plugin-entry.yml" \
-  data/plugins/haotian-lu-prog__dsh-update-all--plugin.yml
+cp "/Users/lu.haotian/Library/Mobile Documents/com~apple~CloudDocs/Ai/DSH/dsh-update-plugin/docs/awesome-dsh-plugin-entry.yml" \
+  data/plugins/haotian-lu-prog__dsh-update-plugin--plugin.yml
 
 # 4. Optional: preview the generated README line
 #    (the maintainers regenerate on main after merge; do not edit READMEs by hand)
@@ -42,7 +42,7 @@ npm ci
 node scripts/generate-readme.mjs
 
 # 5. Commit and push
-git add data/plugins/haotian-lu-prog__dsh-update-all--plugin.yml
+git add data/plugins/haotian-lu-prog__dsh-update-plugin--plugin.yml
 git commit -m "Add dsh-update-plugin"
 git push -u origin add-dsh-update-plugin
 
@@ -50,7 +50,7 @@ git push -u origin add-dsh-update-plugin
 gh pr create --repo awesome-dsh-plugin/awesome-dsh-plugin \
   --head haotian-lu-prog:add-dsh-update-plugin \
   --title "Add dsh-update-plugin" \
-  --body-file "/Users/lu.haotian/Library/Mobile Documents/com~apple~CloudDocs/Ai/DSH/dsh-update-all/docs/awesome-pr-body.md"
+  --body-file "/Users/lu.haotian/Library/Mobile Documents/com~apple~CloudDocs/Ai/DSH/dsh-update-plugin/docs/awesome-pr-body.md"
 ```
 
 ## Why this entry is useful next to existing updaters
@@ -66,4 +66,4 @@ The list already has update managers such as
 - A built-in **test reminder** button that exercises the badge and browser
   notification.
 - One-command update of the DSH CLI **and every profile plugin**, using the
-  logic of `dsh-update-all`, with backup and one-click rollback.
+  logic of `dsh-update-plugin`, with backup and one-click rollback.

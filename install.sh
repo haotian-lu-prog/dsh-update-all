@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# dsh-update-all installer.
+# dsh-update-plugin installer.
 #
 # One-liner:
-#   curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+#   curl -fsSL https://github.com/haotian-lu-prog/dsh-update-plugin/releases/latest/download/install.sh | bash
 #
 # Options:
 #   --dir <dir>       install directory (default: ~/.local/bin)
@@ -13,20 +13,20 @@
 #   -h, --help
 #
 # Environment:
-#   DSH_UPDATE_ALL_REPO      same as --repo
-#   DSH_UPDATE_ALL_REF       same as --ref
+#   DSH_UPDATE_PLUGIN_REPO   same as --repo
+#   DSH_UPDATE_PLUGIN_REF    same as --ref
 #   DSH_UPDATE_INSTALL_DIR   same as --dir
 
 set -euo pipefail
 
-REPO="${DSH_UPDATE_ALL_REPO:-haotian-lu-prog/dsh-update-all}"
-REF="${DSH_UPDATE_ALL_REF:-main}"
+REPO="${DSH_UPDATE_PLUGIN_REPO:-haotian-lu-prog/dsh-update-plugin}"
+REF="${DSH_UPDATE_PLUGIN_REF:-main}"
 INSTALL_DIR="${DSH_UPDATE_INSTALL_DIR:-$HOME/.local/bin}"
 LOCAL_SRC=""
 
 usage() {
   cat <<'USAGE'
-dsh-update-all installer
+dsh-update-plugin installer
 
 Usage:
   install.sh [options]
@@ -62,7 +62,7 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p "$INSTALL_DIR"
-TARGET="$INSTALL_DIR/dsh-update-all"
+TARGET="$INSTALL_DIR/dsh-update-plugin"
 
 if [ -n "$LOCAL_SRC" ]; then
   [ -f "$LOCAL_SRC" ] || die "local script not found: $LOCAL_SRC"
@@ -73,10 +73,10 @@ else
     *) die "--repo must be <owner>/<repo> (got: $REPO)" ;;
   esac
   case "$REF" in
-    main|master) URL="https://raw.githubusercontent.com/$REPO/refs/heads/$REF/dsh-update-all.sh" ;;
-    *)           URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-all.sh" ;;
+    main|master) URL="https://raw.githubusercontent.com/$REPO/refs/heads/$REF/dsh-update-plugin.sh" ;;
+    *)           URL="https://raw.githubusercontent.com/$REPO/$REF/dsh-update-plugin.sh" ;;
   esac
-  TMP="$(mktemp "${TMPDIR:-/tmp}/dsh-update-all.XXXXXX")"
+  TMP="$(mktemp "${TMPDIR:-/tmp}/dsh-update-plugin.XXXXXX")"
   trap 'rm -f "$TMP"' EXIT
   if command -v curl >/dev/null 2>&1; then
     curl -fsSL "$URL" -o "$TMP" || die "download failed: $URL"
@@ -93,7 +93,7 @@ printf 'installed: %s\n' "$TARGET"
 
 case ":$PATH:" in
   *":$INSTALL_DIR:"*)
-    printf 'run: dsh-update-all\n' ;;
+    printf 'run: dsh-update-plugin\n' ;;
   *)
     # shellcheck disable=SC2016  # $PATH is printed literally on purpose
     printf '\n%s is not in PATH. Add this to your shell profile:\n  export PATH="%s:$PATH"\n' "$INSTALL_DIR" "$INSTALL_DIR" ;;

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# dsh-update-all — update DeepSeek Harness (DSH), its bundled packages and
+# dsh-update-plugin — update DeepSeek Harness (DSH), its bundled packages and
 # every profile plugin, in one command.
 #
-# Project: https://github.com/haotian-lu-prog/dsh-update-all
+# Project: https://github.com/haotian-lu-prog/dsh-update-plugin
 # License: MIT
 #
 # This script only needs bash + node + the package manager you already use
@@ -46,10 +46,10 @@ die()  { err "$*"; exit 1; }
 
 usage() {
   cat <<'USAGE'
-dsh-update-all — update DeepSeek Harness (DSH) and all profile plugins.
+dsh-update-plugin — update DeepSeek Harness (DSH) and all profile plugins.
 
 Usage:
-  dsh-update-all [options]
+  dsh-update-plugin [options]
 
 Update options:
   --channel <auto|stable|next|alpha>
@@ -72,7 +72,7 @@ Backup / rollback:
 
 Other:
   --target-version       Print the newest version that would be installed and exit.
-  --install              Install this script to ~/.local/bin/dsh-update-all.
+  --install              Install this script to ~/.local/bin/dsh-update-plugin.
   -h, --help             Show this help.
   -V, --version          Show updater version.
 
@@ -93,7 +93,7 @@ die_usage() { err "$*"; printf '\n'; usage; exit 2; }
 
 install_self() {
   local target_dir="${DSH_UPDATE_INSTALL_DIR:-$HOME/.local/bin}"
-  local target="$target_dir/dsh-update-all"
+  local target="$target_dir/dsh-update-plugin"
   mkdir -p "$target_dir"
   install -m 755 "$0" "$target"
   ok "installed to $target"
@@ -131,7 +131,7 @@ while [ $# -gt 0 ]; do
     --target-version) PRINT_TARGET=1; shift ;;
     --install) install_self; exit 0 ;;
     -h|--help) usage; exit 0 ;;
-    -V|--version) printf 'dsh-update-all %s\n' "$UPDATER_VERSION"; exit 0 ;;
+    -V|--version) printf 'dsh-update-plugin %s\n' "$UPDATER_VERSION"; exit 0 ;;
     --) shift; break ;;
     -*) die_usage "unknown option: $1" ;;
     *) die_usage "unexpected argument: $1" ;;
@@ -501,7 +501,7 @@ fi
 if [ "$FAILED" -gt 0 ]; then
   err "$FAILED step(s) failed. Backup: ${BACKUP_DIR:-none}"
   if [ -n "$BACKUP_DIR" ]; then
-    printf 'To roll back: dsh-update-all --rollback %s\n' "$(basename "$BACKUP_DIR")" >&2
+    printf 'To roll back: dsh-update-plugin --rollback %s\n' "$(basename "$BACKUP_DIR")" >&2
   fi
   exit 1
 fi

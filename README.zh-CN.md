@@ -1,6 +1,6 @@
-# dsh-update-all
+# dsh-update-plugin
 
-[![CI](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-all/actions/workflows/ci.yml)
+[![CI](https://github.com/haotian-lu-prog/dsh-update-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/haotian-lu-prog/dsh-update-plugin/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/dsh-update-plugin.svg)](https://www.npmjs.com/package/dsh-update-plugin)
 [![Topic: dsh-plugin](https://img.shields.io/badge/topic-dsh--plugin-0f766e)](https://github.com/topics/dsh-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -9,6 +9,17 @@
 **所有 profile 插件**。
 
 [English](README.md) · [更新日志](CHANGELOG.md) · [贡献指南](CONTRIBUTING.md)
+
+> **已从 `dsh-update-all` 改名。** 现在仓库、CLI 命令、Homebrew formula 和 npm
+> 包统一使用 `dsh-update-plugin`。如果你在 v0.2.0 之前装过 CLI，需要重装一次才能
+> 拿到改名后的命令；旧的仓库 URL 会被 GitHub 自动重定向。
+
+本仓库用同一个名字提供两个东西：
+
+| 产物 | 安装方式 | 作用 |
+| --- | --- | --- |
+| **CLI**（`dsh-update-plugin`） | `brew install dsh-update-plugin` 或 `install.sh` | 一条命令更新 DSH CLI、随包依赖和所有 profile 插件 |
+| **DSH Web 插件**（npm `dsh-update-plugin`） | `dsh plugin --profile web add dsh-update-plugin` | 在设置页和右侧栏加入「检查更新」 |
 
 ---
 
@@ -28,7 +39,7 @@ DSH 的更新通常分散在至少两个地方：
 
 ## 特性
 
-- **一条命令**：`dsh-update-all`。
+- **一条命令**：`dsh-update-plugin`。
 - **CLI + 插件**：同时更新全局 CLI 和所有 profile 的插件。
 - **真正最新**：比较 npm 的**所有** dist-tag（`latest`、`next`、`alpha`…），
   不盲信 `latest`。
@@ -58,7 +69,7 @@ shell 脚本。
 dsh plugin --profile web add dsh-update-plugin
 
 # 本地开发 / 从本仓库安装
-dsh plugin --profile web add /path/to/dsh-update-all/plugin
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin
 ```
 
 安装、兼容性、兜底方案和开发说明见 [`plugin/`](plugin/)；社区公告文案见
@@ -81,42 +92,42 @@ dsh plugin --profile web add /path/to/dsh-update-all/plugin
 ### 一行安装
 
 ```bash
-curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-plugin/releases/latest/download/install.sh | bash
 ```
 
 安装器会从 `refs/heads/main` 拉取最新版 updater。若想直接用 main 分支上的安装器：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/install.sh | bash
 ```
 
 ### Homebrew
 
 ```bash
-brew tap haotian-lu-prog/dsh-update-all https://github.com/haotian-lu-prog/dsh-update-all
-brew trust haotian-lu-prog/dsh-update-all
-brew install dsh-update-all
+brew tap haotian-lu-prog/dsh-update-plugin https://github.com/haotian-lu-prog/dsh-update-plugin
+brew trust haotian-lu-prog/dsh-update-plugin
+brew install dsh-update-plugin
 ```
 
 Homebrew 6+ 默认不加载第三方 tap 的 formula，`brew trust` 是每个 tap 只需
 执行一次的操作；较老版本没有 trust 命令的话跳过这行即可。
 
-formula 就在本仓库里（`Formula/dsh-update-all.rb`），每次发版会自动更新
-`url` 和 `sha256`，`brew upgrade dsh-update-all` 就能拿到最新版，不需要独立
+formula 就在本仓库里（`Formula/dsh-update-plugin.rb`），每次发版会自动更新
+`url` 和 `sha256`，`brew upgrade dsh-update-plugin` 就能拿到最新版，不需要独立
 的 tap 仓库。
 
 ### 手动安装
 
 ```bash
-git clone https://github.com/haotian-lu-prog/dsh-update-all.git
-cd dsh-update-all
-./install.sh --local dsh-update-all.sh
+git clone https://github.com/haotian-lu-prog/dsh-update-plugin.git
+cd dsh-update-plugin
+./install.sh --local dsh-update-plugin.sh
 ```
 
 ### 本地直接运行（不安装）
 
 ```bash
-bash ./dsh-update-all.sh --dry-run
+bash ./dsh-update-plugin.sh --dry-run
 ```
 
 如果 `~/.local/bin` 不在 `PATH` 中，安装脚本会提示需要添加的配置。
@@ -125,31 +136,31 @@ bash ./dsh-update-all.sh --dry-run
 
 ```bash
 # 更新所有东西到最新（默认）
-dsh-update-all
+dsh-update-plugin
 
 # 只预览，不做修改
-dsh-update-all --dry-run
+dsh-update-plugin --dry-run
 
 # 只跟随 stable（latest）通道
-dsh-update-all --channel stable
+dsh-update-plugin --channel stable
 
 # 保守模式：只接受发布满 24 小时的版本
-dsh-update-all --min-age 1440
+dsh-update-plugin --min-age 1440
 
 # 只更新一个 profile
-dsh-update-all --profile web
+dsh-update-plugin --profile web
 
 # 只更新 CLI / 只更新插件
-dsh-update-all --no-plugins
-dsh-update-all --no-cli
+dsh-update-plugin --no-plugins
+dsh-update-plugin --no-cli
 
 # 跳过确认（脚本 / cron）
-dsh-update-all --yes
+dsh-update-plugin --yes
 
 # 查看备份并回滚
-dsh-update-all --list-backups
-dsh-update-all --rollback
-dsh-update-all --rollback 20260911T211500
+dsh-update-plugin --list-backups
+dsh-update-plugin --rollback
+dsh-update-plugin --rollback 20260911T211500
 ```
 
 更新完成后请重启正在运行的 `dsh web` / DSH 会话。
@@ -203,16 +214,16 @@ dsh-update-all --rollback 20260911T211500
 
 ## 安全与回滚
 
-- 先预览：`dsh-update-all --dry-run`。
+- 先预览：`dsh-update-plugin --dry-run`。
 - 每次实际更新默认都会备份，位置在 `~/.dsh/update-backups/`。
 - 一键回滚（恢复 profile 清单、lockfile、依赖以及旧版 CLI）：
 
   ```bash
-  dsh-update-all --rollback
+  dsh-update-plugin --rollback
   ```
 
 - 默认会给 pnpm 传 `--config.minimum-release-age=0`，即不等待 24 小时供应链延迟。
-  如需更保守：`dsh-update-all --min-age 1440`（或
+  如需更保守：`dsh-update-plugin --min-age 1440`（或
   `DSH_UPDATE_MIN_AGE=1440`）。
 - 本工具只写入你的 DSH home 以及全局 npm/pnpm 前缀，不会向任何其他服务器
   发送数据；npm/pnpm 只会访问它们各自的 registry。
@@ -221,9 +232,9 @@ dsh-update-all --rollback 20260911T211500
 
 **Homebrew 提示 tap 不受信任怎么办？**
 Homebrew 6+ 默认不加载第三方 tap。执行一次
-`brew trust haotian-lu-prog/dsh-update-all`（或
-`brew trust --formula haotian-lu-prog/dsh-update-all/dsh-update-all`），
-然后重新执行 `brew install dsh-update-all` 即可。
+`brew trust haotian-lu-prog/dsh-update-plugin`（或
+`brew trust --formula haotian-lu-prog/dsh-update-plugin/dsh-update-plugin`），
+然后重新执行 `brew install dsh-update-plugin` 即可。
 
 **为什么 `latest` 不是最新版？**
 DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1`，而 `next`
@@ -248,11 +259,11 @@ DSH 目前仍在发布预发布版，例如某段时间 `latest` 是 `0.1.5-rc.1
 
 - 推送 `v0.1.1` 这样的 tag 会触发 **Release** workflow：校验 tag 与
   `UPDATER_VERSION` 是否一致，自动创建 GitHub Release、生成 release notes，
-  并附带 `dsh-update-all.sh` 和 `install.sh`。
+  并附带 `dsh-update-plugin.sh` 和 `install.sh`。
 - `make release VERSION=0.1.1` 会一次性完成版本号更新、提交、打 tag、推送。
   需要先在 `CHANGELOG.md` 里写好对应版本条目。
 - 同一个 Release workflow 还会更新本仓库里的
-  `Formula/dsh-update-all.rb`，所以发布完成后 Homebrew 立刻指向新版本，
+  `Formula/dsh-update-plugin.rb`，所以发布完成后 Homebrew 立刻指向新版本，
   不需要额外 secret，也不需要第二个仓库。
 - **Upstream check** workflow 每天解析 `@deepseek-ai/dsh` 的最新版本，一旦发现
   比本仓库记录的版本更新，就自动开 issue 提醒维护者适配。

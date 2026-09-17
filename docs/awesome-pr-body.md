@@ -1,7 +1,7 @@
 Adds one entry for **dsh-update-plugin**, a DSH Web plugin that updates the DSH
 CLI and every profile plugin from Settings or the right sidebar.
 
-- `data/plugins/haotian-lu-prog__dsh-update-all--plugin.yml`
+- `data/plugins/haotian-lu-prog__dsh-update-plugin--plugin.yml`
 - Monorepo subpackage entry: `plugin/` declares `dsh.bundle` and ships
   `cordis.patch.yml`
 - npm package: https://www.npmjs.com/package/dsh-update-plugin

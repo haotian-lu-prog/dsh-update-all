@@ -19,7 +19,7 @@ jobs:
       - name: Validate tag against UPDATER_VERSION
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          script_version="$(bash dsh-update-all.sh --version | awk '{print $2}')"
+          script_version="$(bash dsh-update-plugin.sh --version | awk '{print $2}')"
           if [ "$tag" != "$script_version" ]; then
             echo "::error::tag v${tag} does not match UPDATER_VERSION ${script_version}"
             exit 1
@@ -37,7 +37,7 @@ jobs:
               --generate-notes
           fi
           gh release upload "$GITHUB_REF_NAME" \
-            dsh-update-all.sh install.sh --clobber
+            dsh-update-plugin.sh install.sh --clobber
 
   homebrew:
     name: Update Homebrew formula
@@ -52,12 +52,12 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Update Formula/dsh-update-all.rb
+      - name: Update Formula/dsh-update-plugin.rb
         env:
           TAG: ${{ github.ref_name }}
         run: |
           version="${TAG#v}"
-          formula="Formula/dsh-update-all.rb"
+          formula="Formula/dsh-update-plugin.rb"
           if [ ! -f "$formula" ]; then
             echo "::error::$formula not found"
             exit 1

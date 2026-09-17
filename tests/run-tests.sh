@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
-# Test suite for dsh-update-all. It never touches the real DSH installation:
+# Test suite for dsh-update-plugin. It never touches the real DSH installation:
 # every external command (npm, dsh, pnpm) is replaced by a mock in a temp dir.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SCRIPT="$ROOT/dsh-update-all.sh"
+SCRIPT="$ROOT/dsh-update-plugin.sh"
 
-TMPROOT="$(mktemp -d "${TMPDIR:-/tmp}/dsh-update-all-tests.XXXXXX")"
+TMPROOT="$(mktemp -d "${TMPDIR:-/tmp}/dsh-update-plugin-tests.XXXXXX")"
 trap 'rm -rf "$TMPROOT"' EXIT
 
 PASS=0
@@ -127,8 +127,8 @@ test_help_and_version() {
   local out
   out="$(bash "$SCRIPT" --version)"
   case "$out" in
-    "dsh-update-all "*)
-      if printf '%s' "$out" | grep -Eq 'dsh-update-all [0-9]+\.[0-9]+\.[0-9]+'; then
+    "dsh-update-plugin "*)
+      if printf '%s' "$out" | grep -Eq 'dsh-update-plugin [0-9]+\.[0-9]+\.[0-9]+'; then
         pass "prints updater version"
       else
         fail "prints updater version (got: $out)"
@@ -235,7 +235,7 @@ test_unknown_option() {
 # ---------------------------------------------------------------------------
 # runner
 # ---------------------------------------------------------------------------
-printf 'dsh-update-all test suite\n'
+printf 'dsh-update-plugin test suite\n'
 printf 'script: %s\n\n' "$SCRIPT"
 test_help_and_version
 test_dry_run_does_not_change

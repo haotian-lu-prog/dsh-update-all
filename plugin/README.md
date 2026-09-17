@@ -14,8 +14,8 @@ From one row you can check for a newer DeepSeek Harness release and update:
 - the global `@deepseek-ai/dsh` CLI and every bundled `@deepseek-ai/dsh-*` package;
 - every profile's plugins under `~/.dsh/profiles/*`.
 
-The update logic is built into the plugin. It does **not** require Homebrew or a
-separately installed `dsh-update-all` script.
+The update logic is built into the plugin: it does **not** require Homebrew, and
+it does not need the standalone `dsh-update-plugin` CLI to be installed either.
 
 ![Check for Updates... in Settings → General](assets/screenshots/general-en.webp)
 ![Update reminder in the right sidebar](assets/screenshots/sidebar-en.png)
@@ -28,16 +28,16 @@ separately installed `dsh-update-all` script.
 dsh plugin --profile web add dsh-update-plugin
 
 # from a local checkout (development)
-dsh plugin --profile web add /path/to/dsh-update-all/plugin
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin
 ```
 
 If pnpm refuses the install because its `minimumReleaseAge` policy rejects an
-already-updated lockfile entry (for example right after you used
-`dsh-update-all --min-age 0`), rerun the command with the policy relaxed for
-that single install:
+already-updated lockfile entry (for example right after you ran the
+`dsh-update-plugin` CLI with `--min-age 0`), rerun the command with the policy
+relaxed for that single install:
 
 ```bash
-dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin --config.minimum-release-age=0
 ```
 
 > **Always mount with `dsh plugin add`, not plain `pnpm add`.** The official

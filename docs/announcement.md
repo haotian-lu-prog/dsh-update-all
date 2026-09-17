@@ -9,7 +9,7 @@ communities. Replace release links if needed.
 
 **标题**
 
-`dsh-update-all`：一条命令更新 DSH CLI 和所有插件，现在也有 DSH Web 插件
+`dsh-update-plugin`：一条命令更新 DSH CLI 和所有插件，现在也有 DSH Web 插件
 
 **正文**
 
@@ -19,7 +19,7 @@ DSH 的更新通常分散在几处：全局 `@deepseek-ai/dsh` CLI、随包的
 `@deepseek-ai/dsh-*`、以及每个 profile 下的社区插件。手动更新要记住一堆命令，
 而且 pnpm 的 `minimumReleaseAge` 策略经常把新版本挡住。
 
-**`dsh-update-all`** 是一条命令的更新器：
+**`dsh-update-plugin`** 是一条命令的更新器：
 
 - 一条命令更新 CLI、bundle 和所有 profile 插件
 - 自动发现 `~/.dsh/profiles` 下新增的 profile
@@ -40,14 +40,14 @@ DSH 的更新通常分散在几处：全局 `@deepseek-ai/dsh` CLI、随包的
 命令行工具：
 
 ```bash
-brew tap haotian-lu-prog/dsh-update-all
-brew install dsh-update-all
+brew tap haotian-lu-prog/dsh-update-plugin
+brew install dsh-update-plugin
 ```
 
 或者：
 
 ```bash
-curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-plugin/releases/latest/download/install.sh | bash
 ```
 
 DSH Web 插件：
@@ -56,15 +56,15 @@ DSH Web 插件：
 dsh plugin --profile web add dsh-update-plugin
 ```
 
-<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/plugin/assets/screenshots/general-zh.webp" width="720" alt="通用设置里的检查更新">
-<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/plugin/assets/screenshots/settings-page-zh.webp" width="720" alt="完整设置页">
-<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/plugin/assets/screenshots/test-reminder-zh.webp" width="720" alt="测试更新提醒">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/general-zh.webp" width="720" alt="通用设置里的检查更新">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/plugin-cn.png" width="720" alt="设置 → 检查更新完整页面">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/sidebar-cn.png" width="720" alt="右侧栏更新提醒">
 
 **链接**
 
-- GitHub：https://github.com/haotian-lu-prog/dsh-update-all
+- GitHub：https://github.com/haotian-lu-prog/dsh-update-plugin
 - npm：https://www.npmjs.com/package/dsh-update-plugin
-- 插件 Release：https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/plugin-v0.1.0
+- 插件 Release：https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/plugin-v0.1.0
 
 欢迎提 Issue、Discussion 和 PR，也欢迎反馈 DSH 新版适配问题。
 
@@ -74,7 +74,7 @@ dsh plugin --profile web add dsh-update-plugin
 
 **Title**
 
-`dsh-update-all`: one command to update the DSH CLI and all plugins, now with a DSH Web plugin
+`dsh-update-plugin`: one command to update the DSH CLI and all plugins, now with a DSH Web plugin
 
 **Body**
 
@@ -86,7 +86,7 @@ CLI, the bundled `@deepseek-ai/dsh-*` packages, and every community plugin under
 each profile. Updating by hand means remembering several commands, and pnpm's
 `minimumReleaseAge` policy often hides the newest release.
 
-**`dsh-update-all`** is a one-command updater:
+**`dsh-update-plugin`** is a one-command updater:
 
 - Updates the CLI, bundles and every profile plugin in one run
 - Discovers new profiles under `~/.dsh/profiles` automatically
@@ -107,14 +107,14 @@ each profile. Updating by hand means remembering several commands, and pnpm's
 CLI:
 
 ```bash
-brew tap haotian-lu-prog/dsh-update-all
-brew install dsh-update-all
+brew tap haotian-lu-prog/dsh-update-plugin
+brew install dsh-update-plugin
 ```
 
 or:
 
 ```bash
-curl -fsSL https://github.com/haotian-lu-prog/dsh-update-all/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/haotian-lu-prog/dsh-update-plugin/releases/latest/download/install.sh | bash
 ```
 
 DSH Web plugin:
@@ -123,14 +123,15 @@ DSH Web plugin:
 dsh plugin --profile web add dsh-update-plugin
 ```
 
-<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/plugin/assets/screenshots/general-en.webp" width="720" alt="Check for Updates row">
-<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-all/refs/heads/main/plugin/assets/screenshots/sidebar-en.webp" width="720" alt="Right sidebar card">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/general-en.webp" width="720" alt="Check for Updates row">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/sidebar-en.png" width="720" alt="Right sidebar card">
+<img src="https://raw.githubusercontent.com/haotian-lu-prog/dsh-update-plugin/refs/heads/main/plugin/assets/screenshots/plugin-en.png" width="720" alt="Check for Updates settings page">
 
 **Links**
 
-- GitHub: https://github.com/haotian-lu-prog/dsh-update-all
+- GitHub: https://github.com/haotian-lu-prog/dsh-update-plugin
 - npm: https://www.npmjs.com/package/dsh-update-plugin
-- Plugin release: https://github.com/haotian-lu-prog/dsh-update-all/releases/tag/plugin-v0.1.0
+- Plugin release: https://github.com/haotian-lu-prog/dsh-update-plugin/releases/tag/plugin-v0.1.0
 
 Issues, Discussions and PRs are welcome, especially compatibility reports for
 new DSH releases.
@@ -141,14 +142,14 @@ new DSH releases.
 
 中文：
 
-> DSH 更新太分散？我做了 `dsh-update-all`：一条命令更新 CLI、bundle 和所有 profile 插件；还有 DSH Web 插件版，设置里直接「检查更新」，支持频道、min-age、备份和回滚。
-> https://github.com/haotian-lu-prog/dsh-update-all
+> DSH 更新太分散？我做了 `dsh-update-plugin`：一条命令更新 CLI、bundle 和所有 profile 插件；还有 DSH Web 插件版，设置里直接「检查更新」，支持频道、min-age、备份和回滚。
+> https://github.com/haotian-lu-prog/dsh-update-plugin
 > `dsh plugin --profile web add dsh-update-plugin`
 
 English:
 
-> Tired of updating DSH in five places? `dsh-update-all` updates the CLI, bundles and every profile plugin in one command. There is also a DSH Web plugin with a Check for Updates row, channels, backups and rollback.
-> https://github.com/haotian-lu-prog/dsh-update-all
+> Tired of updating DSH in five places? `dsh-update-plugin` updates the CLI, bundles and every profile plugin in one command. There is also a DSH Web plugin with a Check for Updates row, channels, backups and rollback.
+> https://github.com/haotian-lu-prog/dsh-update-plugin
 > `dsh plugin --profile web add dsh-update-plugin`
 
 ---
@@ -161,7 +162,7 @@ One command to update DeepSeek Harness and all profile plugins (plus a DSH Web p
 
 **Body**
 
-I built `dsh-update-all` for the DSH community. It updates the global CLI, the
+I built `dsh-update-plugin` for the DSH community. It updates the global CLI, the
 bundled `@deepseek-ai/dsh-*` packages and every plugin under
 `~/.dsh/profiles/*` in one command.
 
@@ -178,11 +179,11 @@ update badge.
 Install:
 
 ```bash
-brew tap haotian-lu-prog/dsh-update-all
-brew install dsh-update-all
+brew tap haotian-lu-prog/dsh-update-plugin
+brew install dsh-update-plugin
 
 dsh plugin --profile web add dsh-update-plugin
 ```
 
 Feedback and compatibility reports are welcome:
-https://github.com/haotian-lu-prog/dsh-update-all
+https://github.com/haotian-lu-prog/dsh-update-plugin

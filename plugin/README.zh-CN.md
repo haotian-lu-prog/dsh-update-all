@@ -13,8 +13,8 @@
 - 全局 `@deepseek-ai/dsh` CLI 以及随包的 `@deepseek-ai/dsh-*`；
 - `~/.dsh/profiles/*` 下每个 profile 的插件。
 
-更新逻辑完整内置在插件里，**不依赖 Homebrew，也不依赖单独安装的
-`dsh-update-all` 脚本**。
+更新逻辑完整内置在插件里：**不依赖 Homebrew，也不需要额外安装同名的
+`dsh-update-plugin` 命令行工具**。
 
 ![设置 → 通用设置里的「检查更新」](assets/screenshots/general-zh.webp)
 ![右侧栏更新提醒](assets/screenshots/sidebar-cn.png)
@@ -27,14 +27,14 @@
 dsh plugin --profile web add dsh-update-plugin
 
 # 本地开发 / 从本仓库安装
-dsh plugin --profile web add /path/to/dsh-update-all/plugin
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin
 ```
 
 如果 pnpm 的 `minimumReleaseAge` 策略因为 lockfile 里已有较新的条目而拒绝安装
-（例如刚用过 `dsh-update-all --min-age 0`），给这一次安装临时放开策略即可：
+（例如刚用 `dsh-update-plugin` 命令行工具跑过 `--min-age 0`），给这一次安装临时放开策略即可：
 
 ```bash
-dsh plugin --profile web add /path/to/dsh-update-all/plugin --config.minimum-release-age=0
+dsh plugin --profile web add /path/to/dsh-update-plugin/plugin --config.minimum-release-age=0
 ```
 
 > **一定要用 `dsh plugin add` 挂载，不要只用 `pnpm add`。** 官方命令还会把包
