@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   publish:
@@ -57,3 +57,18 @@ jobs:
             exit 1
           fi
           npm publish --access public
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#plugin-v}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists; leaving it untouched"
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --title "dsh-update-plugin v${version}" \
+            --generate-notes

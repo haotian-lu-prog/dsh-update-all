@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-17
+
+Published to npm as `dsh-update-plugin@0.3.1`. No plugin behaviour changed; this
+release refreshes the package metadata after the project rename.
+
+### Changed
+
+- `repository`, `homepage` and `bugs` now point at
+  `haotian-lu-prog/dsh-update-plugin` — the project was renamed from
+  `dsh-update-all`.
+- The READMEs name the CLI by its new command, `dsh-update-plugin`, and explain
+  that the standalone CLI is optional because the update logic is built in.
+- Refreshed the English and Chinese screenshots for the 0.3.0 settings page,
+  the Check for Updates page and the right sidebar tab.
+
+### Fixed
+
+- Backups whose `manifest.json` has no `source` field are now attributed to
+  `dsh-update-plugin` instead of the retired `dsh-update-all` name.
+
 ## [0.3.0] - 2026-09-16
 
 Published to npm as `dsh-update-plugin@0.3.0`. This is the first release that
